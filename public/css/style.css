@@ -1,0 +1,1215 @@
+/* ── Reset & Variables ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  /* 宣紙底色 */
+  --bg:#f2ece0;
+  --bg2:#ede5d0;
+  --bg3:#e6dcc8;
+  --bg4:#ddd0b8;
+
+  /* 墨色文字 */
+  --ink:#1a1208;
+  --ink2:#3a2e1e;
+  --ink3:#6a5c48;
+  --ink4:#9a8c78;
+  --ink5:#c0b09a;
+
+  /* 硃砂紅 */
+  --red:#8b1a1a;
+  --red2:#b02020;
+  --red3:#cc2828;
+  --red-bg:rgba(139,26,26,.07);
+  --red-border:rgba(139,26,26,.28);
+
+  /* 陰爻靛藍 */
+  --yin:#2a3c52;
+  --yin2:#3a5068;
+
+  --border:rgba(42,30,14,.12);
+  --border2:rgba(42,30,14,.07);
+  --shadow:0 2px 16px rgba(42,30,14,.12);
+  --radius:3px;
+}
+
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Noto Serif TC','Source Han Serif TC',Georgia,serif;
+  min-height:100vh;
+  line-height:1.7;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ── Header ── */
+#hdr{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;
+  padding:.75rem 1.8rem;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;
+}
+#hdr-left{display:flex;align-items:center;gap:1rem}
+#logo{
+  color:var(--ink);font-size:1rem;letter-spacing:.4em;font-weight:600;
+  padding-left:.85rem;position:relative;
+}
+#logo::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:1em;background:var(--red);
+}
+#ganzhi-bar{color:var(--ink4);font-size:.72rem;letter-spacing:.06em}
+#nav{display:flex;gap:.3rem}
+.nav-btn{
+  padding:.32rem .85rem;border:1px solid transparent;border-radius:var(--radius);
+  background:transparent;color:var(--ink4);cursor:pointer;font-family:inherit;
+  font-size:.8rem;letter-spacing:.12em;transition:all .2s;
+}
+.nav-btn:hover{color:var(--ink3);border-color:var(--border)}
+.nav-btn.active{color:var(--red2);border-color:var(--red-border);background:var(--red-bg)}
+#ai-status{
+  font-size:.7rem;letter-spacing:.06em;padding:.18rem .5rem;
+  border:1px solid var(--border);border-radius:1px;cursor:pointer;
+  color:var(--ink4);transition:all .2s;
+}
+#ai-status:hover{border-color:var(--red-border);color:var(--red2)}
+
+/* ── Page ── */
+.page{animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.container{max-width:840px;margin:0 auto;padding:1.6rem 1rem 5rem}
+
+/* ── Cards ── */
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.5rem;margin-bottom:1.2rem;
+  box-shadow:var(--shadow);
+}
+.card-title{
+  color:var(--ink2);letter-spacing:.25em;font-size:.78rem;margin-bottom:1rem;
+  padding-left:.7rem;border-left:2px solid var(--red);font-weight:600;
+}
+
+/* ── 時辰卡 ── */
+#shichen-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1rem 1.5rem;margin-bottom:1.2rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  box-shadow:var(--shadow);
+}
+#shichen-info{color:var(--ink3);font-size:.82rem;line-height:2;letter-spacing:.06em}
+#shichen-info strong{color:var(--ink);font-size:1rem}
+#btn-time-cast{
+  padding:.45rem 1.2rem;background:transparent;border:1px solid var(--red-border);
+  border-radius:var(--radius);color:var(--red2);cursor:pointer;font-family:inherit;
+  font-size:.8rem;letter-spacing:.2em;white-space:nowrap;transition:all .2s;
+}
+#btn-time-cast:hover{background:var(--red-bg)}
+
+/* ── Question Card ── */
+#q-card{border:1px solid var(--border)}
+
+/* ── Question Section Labels ── */
+.q-section-label{
+  color:var(--ink4);font-size:.75rem;letter-spacing:.15em;
+  margin:.9rem 0 .5rem;padding-left:.5rem;
+  border-left:1px solid var(--border);
+}
+
+/* ── Category Grid ── */
+#cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.9rem}
+.cat-btn{
+  padding:.45rem .4rem;background:transparent;border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--ink3);cursor:pointer;font-family:inherit;
+  font-size:.8rem;letter-spacing:.06em;transition:all .18s;text-align:center;
+}
+.cat-btn:hover{background:var(--bg3);color:var(--ink2)}
+.cat-btn.active{border-color:var(--red-border);color:var(--red2);background:var(--red-bg)}
+
+/* ── Question Input ── */
+#q-input{
+  width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:.75rem 1rem;color:var(--ink);font-family:inherit;font-size:.92rem;
+  outline:none;transition:border .2s;margin-bottom:.8rem;
+}
+#q-input:focus{border-color:rgba(42,30,14,.3)}
+#q-input::placeholder{color:var(--ink5)}
+
+/* ── Optional Toggle ── */
+#q-optional-toggle{
+  display:flex;align-items:center;gap:.5rem;color:var(--ink5);font-size:.75rem;
+  letter-spacing:.06em;cursor:pointer;margin-bottom:.5rem;padding:.3rem .4rem;
+  transition:color .15s;user-select:none;
+}
+#q-optional-toggle:hover{color:var(--ink4)}
+#q-toggle-icon{color:var(--red);width:1rem;text-align:center;flex-shrink:0}
+#q-optional-fields{display:flex;flex-direction:column;gap:.45rem;margin-bottom:.6rem}
+#q-optional-fields input{
+  width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:.6rem 1rem;color:var(--ink);font-family:inherit;font-size:.85rem;
+  outline:none;transition:border .2s;
+}
+#q-optional-fields input:focus{border-color:var(--border)}
+#q-optional-fields input::placeholder{color:var(--ink5)}
+
+/* ── Method buttons ── */
+#method-row{display:flex;gap:.5rem;margin-bottom:.9rem;flex-wrap:wrap}
+.mtd-btn{
+  padding:.35rem .9rem;border:1px solid var(--border);border-radius:var(--radius);
+  background:transparent;color:var(--ink4);cursor:pointer;font-family:inherit;
+  font-size:.8rem;letter-spacing:.12em;transition:all .2s;
+}
+.mtd-btn:hover{background:var(--bg3);color:var(--ink2)}
+.mtd-btn.active{border-color:var(--red-border);color:var(--red2);background:var(--red-bg)}
+
+/* ── Manual selector ── */
+#manual-lines{display:flex;flex-direction:column;gap:.5rem}
+.m-line{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.m-line-name{color:var(--ink4);font-size:.76rem;width:5.5rem;flex-shrink:0}
+.m-line-btns{display:flex;gap:.3rem;flex-wrap:wrap}
+.m-line-btns button{
+  padding:.22rem .55rem;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--ink3);cursor:pointer;font-size:.72rem;
+  font-family:inherit;transition:all .15s;
+}
+.m-yang{border-color:rgba(42,30,14,.35)!important;color:var(--ink)!important;background:rgba(42,30,14,.05)!important}
+.m-yin{border-color:rgba(42,60,82,.5)!important;color:var(--yin2)!important}
+.m-yangc{border-color:var(--red-border)!important;color:var(--red2)!important}
+.m-yinc{border-color:rgba(42,60,82,.3)!important;color:var(--yin)!important;opacity:.7}
+.hint{color:var(--ink4);font-size:.78rem;margin-bottom:.5rem}
+
+/* ── Cast Button ── */
+#cast-btn{
+  display:block;width:100%;padding:1rem;
+  background:var(--red);border:none;border-radius:var(--radius);
+  color:#fff;font-family:inherit;font-size:1rem;font-weight:400;letter-spacing:.6em;
+  cursor:pointer;transition:all .2s;margin-top:.5rem;
+  box-shadow:0 2px 12px rgba(139,26,26,.2);
+}
+#cast-btn:hover{background:var(--red2);box-shadow:0 4px 20px rgba(139,26,26,.3)}
+#cast-btn:active{transform:translateY(1px)}
+#cast-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+
+/* ── Cast Animation ── */
+#cast-anim{text-align:center;padding:1.5rem 0}
+#cast-title{font-size:.9rem;color:var(--ink3);letter-spacing:.25em}
+#coins-wrap{display:flex;justify-content:center;gap:1.5rem;margin:1.2rem 0;height:80px;align-items:center}
+.coin{
+  width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;user-select:none;
+}
+.coin.flip{animation:coinFlip .65s ease}
+.coin-h{
+  background:radial-gradient(circle at 38% 38%,#f0e8d0,#c8b888);
+  border:1px solid rgba(139,26,26,.3);color:var(--ink);
+  box-shadow:0 3px 12px rgba(42,30,14,.2);
+}
+.coin-t{
+  background:radial-gradient(circle at 38% 38%,#d8d0c4,#a09880);
+  border:1px solid var(--border);color:var(--ink3);
+  box-shadow:0 3px 10px rgba(42,30,14,.15);
+}
+@keyframes coinFlip{0%{transform:rotateY(0)}50%{transform:rotateY(540deg)}100%{transform:rotateY(1080deg)}}
+#cast-line-label{color:var(--ink3);font-size:.85rem;margin:.6rem 0;letter-spacing:.2em}
+#line-progress{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;margin-top:.8rem}
+.lp-dot{width:10px;height:10px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);transition:all .35s}
+.lp-dot.done{border-color:var(--ink3);background:var(--ink3)}
+.lp-dot.current{border-color:var(--red);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,26,26,.35)}50%{box-shadow:0 0 0 6px transparent}}
+
+/* ── Section Deco ── */
+.section-deco{
+  display:flex;align-items:center;gap:.8rem;color:var(--ink4);
+  font-size:.72rem;letter-spacing:.3em;margin:.5rem 0 .7rem;
+}
+.section-deco::before,.section-deco::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+}
+.change-arrow{text-align:center;color:var(--red);font-size:1.3rem;padding:.8rem 0;letter-spacing:.3em;opacity:.6}
+
+/* ── Fortune Badge ── */
+.hex-symbol-wrap{display:flex;flex-direction:column;align-items:center;gap:.6rem;flex-shrink:0}
+.ft-badge{
+  font-size:.68rem;padding:.18rem .6rem;border-radius:1px;letter-spacing:.15em;
+  font-weight:600;white-space:nowrap;
+}
+.ft-great{background:rgba(139,26,26,.08);border:1px solid rgba(139,26,26,.4);color:var(--red2)}
+.ft-good{background:rgba(26,80,36,.08);border:1px solid rgba(26,80,36,.35);color:#2a7040}
+.ft-neutral{background:rgba(90,80,60,.08);border:1px solid rgba(90,80,60,.25);color:var(--ink3)}
+.ft-caution{background:rgba(130,80,20,.08);border:1px solid rgba(130,80,20,.3);color:#805020}
+.ft-mini{font-size:.62rem;padding:.08rem .35rem;border-radius:1px;margin-left:.3rem;vertical-align:middle}
+
+/* ── Hexagram Card ── */
+.hex-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.6rem;margin-bottom:1rem;box-shadow:var(--shadow);
+}
+.hex-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:1.2rem}
+.hex-symbol{font-size:4rem;line-height:1;color:var(--ink);cursor:default;display:block}
+.hex-num{color:var(--ink4);font-size:.7rem;letter-spacing:.1em}
+.hex-name{font-size:1.7rem;color:var(--ink);letter-spacing:.3em;margin:.1rem 0;font-weight:600}
+.hex-struct{color:var(--ink3);font-size:.78rem;margin-top:.15rem;letter-spacing:.04em}
+.hex-virtue{
+  display:inline-block;border:1px solid var(--border);color:var(--ink3);
+  padding:.1rem .55rem;border-radius:1px;font-size:.7rem;margin-top:.4rem;letter-spacing:.12em;
+}
+
+/* ── Trigrams ── */
+.trigram-row{display:flex;align-items:center;gap:.6rem;margin:.8rem 0;flex-wrap:wrap}
+.trig-arrow{color:var(--ink5);font-size:.9rem;flex-shrink:0}
+.trigram-box{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:.5rem .9rem;text-align:center;flex:1;min-width:100px;
+}
+.trigram-sym{font-size:1.4rem;color:var(--ink)}
+.trigram-name{color:var(--ink2);font-size:.76rem;margin-top:.1rem;letter-spacing:.05em}
+.trigram-attr{color:var(--ink4);font-size:.66rem;margin-top:.1rem}
+
+/* ── Hex Lines Visual ── */
+.hex-visual{
+  display:flex;flex-direction:column-reverse;gap:6px;margin:1rem 0;
+  background:var(--bg);border-radius:var(--radius);padding:.9rem 1rem;
+  border:1px solid var(--border2);
+}
+.hline{display:flex;align-items:center;gap:.8rem}
+.hline.changing{background:rgba(139,26,26,.04);border-radius:2px;padding:.1rem .3rem;margin:0 -.3rem}
+.hline-num{color:var(--ink5);font-size:.68rem;width:1.8rem;text-align:right;flex-shrink:0}
+.hline-bars{display:flex;gap:8px;flex:1;height:10px;align-items:center}
+.bar{height:10px;border-radius:1px}
+.bar-yang{flex:1;background:var(--ink2)}
+.bar-yin1,.bar-yin2{flex:1;background:var(--yin)}
+.hline.changing .bar-yang{background:var(--red);box-shadow:0 0 6px rgba(139,26,26,.3)}
+.hline.changing .bar-yin1,.hline.changing .bar-yin2{background:var(--red2);opacity:.8}
+.hline-tag{width:4rem;flex-shrink:0;font-size:.62rem;text-align:right}
+.tag-yang{color:var(--ink3)}
+.tag-yin{color:var(--yin2)}
+.tag-chg{color:var(--red2);font-weight:600}
+
+/* ── 六親納甲 ── */
+.hline-lq{width:5.4rem;flex-shrink:0;display:flex;align-items:center;gap:.25rem}
+.lq-zhi{font-size:.6rem;color:var(--ink4);width:1.1rem;flex-shrink:0;text-align:center}
+.lq-badge{font-size:.56rem;padding:.05rem .28rem;border-radius:2px;white-space:nowrap;
+  font-weight:600;letter-spacing:.05em}
+.lq-fumu  {background:#3a2010;color:#d4c0a0}   /* 父母 — 深褐 */
+.lq-zisun {background:#0f3a1a;color:#a0d4b0}   /* 子孫 — 深綠 */
+.lq-qicai {background:#3a2f00;color:#d4c060}   /* 妻財 — 深金 */
+.lq-guanui{background:#3a0f0f;color:#d4a0a0}   /* 官鬼 — 深紅 */
+.lq-xiongdi{background:#0f1e3a;color:#a0b4d4}  /* 兄弟 — 深藍 */
+
+/* ── 宮卦標籤 ── */
+.palace-tag{font-size:.62rem;color:var(--ink4);margin-top:.25rem}
+.palace-ele{font-weight:700;padding:.05rem .3rem;border-radius:2px;font-size:.65rem}
+.palace-金{color:#8a5a00;background:#f8ead8}
+.palace-水{color:#1a3a5a;background:#d8e8f8}
+.palace-木{color:#1a4a1a;background:#d8f0d8}
+.palace-火{color:#6a1a1a;background:#f8e0d8}
+.palace-土{color:#4a3a1a;background:#ece4d0}
+
+/* ── 之卦動態箭頭 ── */
+.change-arrow{
+  text-align:center;padding:.9rem .5rem;letter-spacing:.05em;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap
+}
+.ca-main{color:var(--ink2);font-size:1.1rem;font-weight:700}
+.ca-arrow{color:var(--red);font-size:1rem;opacity:.7}
+.ca-label{font-size:.65rem;color:var(--ink4);padding:.1rem .4rem;background:var(--bg3);
+  border-radius:10px;letter-spacing:.05em}
+.ca-changed{color:var(--yin2);font-size:1.1rem;font-weight:700}
+
+/* ── 命卦方位連結卡 ── */
+.mingua-link-card{
+  margin-top:1rem;padding:.75rem .9rem;
+  background:linear-gradient(135deg,rgba(42,60,82,.06),rgba(42,60,82,.02));
+  border:1px solid rgba(42,60,82,.15);border-radius:4px;
+}
+.ml-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.ml-sym{font-size:1.5rem;line-height:1}
+.ml-title{font-size:.8rem;font-weight:700;color:var(--ink2)}
+.ml-sub{font-size:.62rem;color:var(--ink4);margin-top:.1rem}
+.ml-item{display:flex;align-items:center;gap:.5rem;padding:.3rem 0;
+  border-top:1px solid rgba(0,0,0,.06);flex-wrap:wrap}
+.ml-pos{font-size:.7rem;color:var(--ink3);width:5rem;flex-shrink:0}
+.ml-badge{font-size:.65rem;font-weight:700;padding:.1rem .4rem;border-radius:3px}
+.ml-hint{font-size:.65rem}
+.ml-lucky{color:var(--red)}
+.ml-unlucky{color:var(--yin2)}
+
+/* ── Content Sections ── */
+.sec-label{
+  color:var(--ink2);letter-spacing:.2em;font-size:.72rem;
+  margin:1rem 0 .4rem;padding-left:.5rem;border-left:2px solid var(--red);
+  display:flex;align-items:center;gap:.4rem;
+}
+.sec-hint{color:var(--ink4);font-size:.7rem;margin-bottom:.4rem;letter-spacing:.03em}
+.guaci{
+  font-size:.96rem;color:var(--ink);line-height:2;
+  background:var(--bg3);padding:.85rem 1.1rem;border-radius:var(--radius);
+  border-left:2px solid rgba(42,30,14,.2);margin-bottom:.5rem;
+}
+.modern-text{color:var(--ink2);line-height:1.9;font-size:.88rem;padding:.2rem 0}
+.lines-list{display:flex;flex-direction:column;gap:.5rem;margin-top:.4rem}
+.line-item{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:.7rem 1rem;transition:border .2s;
+}
+.line-item:hover{border-color:var(--border)}
+.line-item.changing{border-color:rgba(139,26,26,.25);background:rgba(139,26,26,.03)}
+.line-item-hd{display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem}
+.line-item-name{color:var(--ink2);font-size:.8rem;letter-spacing:.08em}
+.line-chg-badge{
+  font-size:.6rem;padding:.08rem .38rem;
+  background:var(--red-bg);border:1px solid var(--red-border);
+  border-radius:1px;color:var(--red2);letter-spacing:.05em;
+}
+.line-item-text{color:var(--ink3);font-size:.78rem;margin-bottom:.2rem;font-style:italic;line-height:1.5}
+.line-item-interp{color:var(--ink);font-size:.84rem;line-height:1.7}
+
+/* ── First Reaction Panel ── */
+#reaction-panel{border:1px solid var(--border)}
+.reaction-title{color:var(--ink2);font-size:.88rem;letter-spacing:.1em;margin-bottom:.25rem}
+.reaction-hint{color:var(--ink4);font-size:.7rem;margin-bottom:.75rem;font-style:italic;letter-spacing:.03em}
+#reaction-btns{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem;margin-bottom:.6rem}
+.react-btn{
+  padding:.48rem .5rem;background:transparent;border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--ink3);cursor:pointer;font-family:inherit;
+  font-size:.8rem;letter-spacing:.04em;transition:all .18s;text-align:center;
+}
+.react-btn:hover{background:var(--bg3)}
+.react-btn.active{border-color:var(--red-border);color:var(--red2);background:var(--red-bg)}
+#reaction-insight{
+  color:var(--ink2);font-size:.84rem;line-height:1.8;
+  padding:.6rem .9rem;border-left:2px solid var(--red);
+  background:rgba(139,26,26,.04);border-radius:var(--radius);
+  display:none;letter-spacing:.03em;
+}
+
+/* ── AI Style Selector ── */
+#ai-style-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.7rem;flex-wrap:wrap}
+.style-label{color:var(--ink4);font-size:.74rem;letter-spacing:.1em;flex-shrink:0}
+.style-btn{
+  padding:.28rem .72rem;background:transparent;border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--ink4);cursor:pointer;font-family:inherit;
+  font-size:.76rem;letter-spacing:.1em;transition:all .18s;
+}
+.style-btn:hover{background:var(--bg3);color:var(--ink2)}
+.style-btn.active{border-color:var(--red-border);color:var(--red2);background:var(--red-bg)}
+
+/* ── AI Section ── */
+#ai-section{margin:.5rem 0 1rem}
+#ai-btn{
+  display:block;width:100%;padding:.75rem;
+  background:transparent;border:1px solid var(--red-border);border-radius:var(--radius);
+  color:var(--red2);font-family:inherit;font-size:.88rem;letter-spacing:.25em;
+  cursor:pointer;transition:all .2s;
+}
+#ai-btn:hover{background:var(--red-bg);border-color:var(--red3)}
+#ai-btn:disabled{opacity:.35;cursor:not-allowed}
+#ai-result{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1.4rem;margin-top:.8rem;
+  border-left:2px solid var(--red-border);
+}
+#ai-text{color:var(--ink);font-size:.87rem;line-height:2}
+.ai-fortune{
+  font-size:.95rem;color:var(--red2);
+  background:var(--red-bg);border:1px solid var(--red-border);
+  border-radius:var(--radius);padding:.45rem 1rem;margin-bottom:.8rem;letter-spacing:.12em;
+}
+.ai-oneline{}
+.ai-sec-title{color:var(--ink2);font-weight:600;font-size:.88rem}
+.ai-model-note{
+  margin-top:1rem;padding-top:.6rem;border-top:1px solid var(--border2);
+  color:var(--ink4);font-size:.68rem;letter-spacing:.05em;text-align:right;
+}
+.ai-loading{color:var(--ink3);font-size:.88rem;letter-spacing:.2em;animation:blink .9s infinite}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+
+/* ── 起卦守則 ── */
+#guide-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:.8rem;overflow:hidden;
+}
+#guide-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.6rem 1rem;cursor:pointer;user-select:none;
+  font-size:.82rem;letter-spacing:.15em;color:var(--ink3);
+  transition:background .15s;
+}
+#guide-header:hover{background:var(--bg3)}
+#guide-icon{font-size:.75rem;color:var(--ink4)}
+#guide-body{padding:.6rem 1rem .9rem;border-top:1px solid var(--border2)}
+.guide-section{margin-bottom:.7rem}
+.guide-section:last-child{margin-bottom:0}
+.guide-title{font-size:.78rem;font-weight:600;color:var(--ink2);letter-spacing:.1em;margin-bottom:.3rem}
+.guide-row{display:flex;align-items:flex-start;gap:.5rem;font-size:.78rem;color:var(--ink2);margin:.2rem 0;line-height:1.6}
+.guide-tag{
+  flex-shrink:0;font-size:.68rem;padding:.05rem .35rem;border-radius:2px;
+  letter-spacing:.05em;margin-top:.15rem;
+}
+.guide-tag.must{background:rgba(139,26,26,.1);color:var(--red2);border:1px solid var(--red-border)}
+.guide-tag.prep{background:rgba(42,60,82,.08);color:var(--yin2);border:1px solid rgba(42,60,82,.2)}
+.guide-example{font-size:.76rem;padding:.2rem .6rem;border-radius:2px;margin:.15rem 0;letter-spacing:.05em}
+.guide-example.bad{color:#a04040;background:rgba(160,64,64,.06)}
+.guide-example.good{color:#2a6040;background:rgba(42,96,64,.07)}
+.guide-proxy{background:rgba(139,26,26,.04);border-radius:2px;padding:.4rem .6rem;border-left:2px solid var(--red-border)}
+
+/* ── 幫別人算 ── */
+#proxy-toggle{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.8rem;color:var(--ink3);letter-spacing:.1em;
+  cursor:pointer;user-select:none;margin:.5rem 0 .3rem;
+  padding:.25rem .5rem;border-radius:2px;transition:background .15s;
+}
+#proxy-toggle:hover{background:var(--bg3)}
+#proxy-toggle-icon{font-size:.95rem;line-height:1}
+#proxy-fields{margin-bottom:.5rem}
+.proxy-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.proxy-row input{flex:1;min-width:120px}
+.proxy-label-text{
+  font-size:.78rem;color:var(--red2);letter-spacing:.08em;
+  padding:.3rem .5rem;background:var(--red-bg);border-radius:2px;
+  border:1px solid var(--red-border);margin-top:.3rem;display:block;
+}
+
+/* ── AI 按鈕群組與備註 ── */
+.ai-btn-group{position:relative;margin-bottom:0}
+.ai-btn-note{
+  display:block;font-size:.72rem;color:var(--ink4);letter-spacing:.08em;
+  text-align:center;margin:.2rem 0 .6rem;
+}
+.trad-note{color:var(--yin2);opacity:.75}
+
+/* ── 複製指令區塊 ── */
+.copy-prompt-wrap{
+  display:flex;align-items:center;gap:.7rem;margin-top:.9rem;
+  padding:.6rem .8rem;
+  background:var(--bg2);border:1px dashed var(--border);border-radius:var(--radius);
+}
+#copy-prompt-btn, #copy-ai-prompt-btn{
+  flex-shrink:0;padding:.4rem .9rem;
+  background:transparent;border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--ink3);font-family:inherit;font-size:.8rem;letter-spacing:.1em;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+#copy-prompt-btn:hover, #copy-ai-prompt-btn:hover{background:var(--bg3);color:var(--ink2);border-color:var(--ink4)}
+#copy-prompt-btn.copied, #copy-ai-prompt-btn.copied{
+  color:#2a7a2a;border-color:rgba(42,122,42,.4);background:rgba(42,122,42,.07);
+}
+.copy-prompt-note{font-size:.72rem;color:var(--ink4);letter-spacing:.05em;line-height:1.5}
+
+/* ── 傳統六爻解析按鈕 ── */
+#trad-ai-btn{
+  display:block;width:100%;padding:.75rem;margin-top:.6rem;
+  background:transparent;border:1px solid rgba(42,60,82,.28);border-radius:var(--radius);
+  color:var(--yin2);font-family:inherit;font-size:.88rem;letter-spacing:.25em;
+  cursor:pointer;transition:all .2s;
+}
+#trad-ai-btn:hover{background:rgba(42,60,82,.06);border-color:rgba(42,60,82,.45);color:var(--yin)}
+#trad-ai-btn:disabled{opacity:.35;cursor:not-allowed}
+#trad-ai-result{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1.4rem;margin-top:.8rem;
+  border-left:2px solid rgba(42,60,82,.3);
+}
+.trad-card-title{
+  font-size:.8rem;letter-spacing:.3em;color:var(--yin2);margin-bottom:.9rem;
+  border-bottom:1px solid rgba(42,60,82,.2);padding-bottom:.5rem;
+}
+#result-actions-trad{display:none;gap:.6rem;margin-top:.4rem}
+#result-actions-trad.visible{display:flex}
+.action-btn-trad{
+  flex:1;border-color:rgba(42,60,82,.25);color:var(--yin2);
+}
+.action-btn-trad:hover{background:rgba(42,60,82,.06);color:var(--yin);border-color:rgba(42,60,82,.45)}
+#trad-export-btn:disabled{opacity:.4;cursor:not-allowed}
+#trad-ai-text{color:var(--ink);font-size:.87rem;line-height:2}
+.ai-section-h{
+  font-weight:600;font-size:.9rem;color:var(--ink2);
+  margin:.8rem 0 .25rem;letter-spacing:.08em;
+}
+.trad-judge{color:var(--red2)}
+
+/* ── Result Actions ── */
+#result-actions{display:flex;gap:.6rem;margin:.8rem 0;flex-wrap:wrap}
+.action-btn{
+  flex:1;min-width:110px;padding:.55rem;background:transparent;
+  border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--ink3);cursor:pointer;font-family:inherit;font-size:.82rem;
+  letter-spacing:.1em;transition:all .2s;
+}
+.action-btn:hover{background:var(--bg3);color:var(--ink2)}
+#btn-export{border-color:var(--red-border);color:var(--red2)}
+#btn-export:hover{background:var(--red-bg)}
+#save-msg{color:var(--ink3);font-size:.78rem;text-align:center;min-height:1.1rem;letter-spacing:.05em;padding:.2rem 0}
+
+/* ── Index ── */
+#hex-search{
+  width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:.62rem 1rem;color:var(--ink);font-family:inherit;font-size:.9rem;
+  outline:none;transition:border .2s;margin-bottom:.9rem;
+}
+#hex-search:focus{border-color:rgba(42,30,14,.3)}
+#hex-search::placeholder{color:var(--ink5)}
+#trigram-filter{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;margin-bottom:.5rem}
+.filter-label{color:var(--ink3);font-size:.76rem;margin-right:.2rem}
+.trig-btn{
+  padding:.2rem .55rem;background:transparent;border:1px solid var(--border2);border-radius:var(--radius);
+  color:var(--ink4);cursor:pointer;font-family:inherit;font-size:.76rem;transition:all .15s;
+}
+.trig-btn:hover{border-color:var(--border);color:var(--ink3)}
+.trig-btn.active{border-color:var(--red-border);color:var(--red2);background:var(--red-bg)}
+#hex-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.6rem;margin-top:.7rem;
+}
+.hex-tile{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:.9rem .6rem;text-align:center;cursor:pointer;transition:all .2s;
+}
+.hex-tile:hover{border-color:var(--border);background:var(--bg3);transform:translateY(-2px);box-shadow:0 4px 12px rgba(42,30,14,.1)}
+.tile-num{color:var(--ink5);font-size:.62rem;letter-spacing:.05em}
+.tile-sym{font-size:2rem;color:var(--ink);display:block;margin:.2rem 0}
+.tile-name{color:var(--ink2);font-size:.85rem;letter-spacing:.1em}
+.tile-vt{color:var(--ink4);font-size:.64rem;margin-top:.15rem}
+.hex-tile.hidden{display:none}
+
+/* ── Modal ── */
+#hex-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem}
+#hex-modal-overlay{position:absolute;inset:0;background:rgba(26,18,8,.7);backdrop-filter:blur(2px)}
+#hex-modal-content{
+  position:relative;z-index:201;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);max-width:720px;width:100%;max-height:88vh;overflow-y:auto;padding:1.8rem;
+  box-shadow:0 12px 50px rgba(42,30,14,.3);
+}
+#modal-close{
+  position:sticky;top:0;float:right;background:var(--bg3);border:1px solid var(--border);
+  width:2rem;height:2rem;border-radius:var(--radius);color:var(--ink3);font-size:.9rem;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;
+}
+#modal-close:hover{border-color:var(--red-border);color:var(--red2)}
+
+/* ── History ── */
+#hist-stats{color:var(--ink4);font-size:.8rem;letter-spacing:.05em}
+#hist-list{display:flex;flex-direction:column;gap:.7rem}
+.hist-item{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:1rem 1.2rem;cursor:pointer;transition:all .2s;
+  border-left:2px solid transparent;
+}
+.hist-item:hover{border-left-color:var(--red);background:var(--bg3);box-shadow:var(--shadow)}
+.hist-top{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:.3rem}
+.hist-sym{font-size:1.7rem;color:var(--ink);flex-shrink:0;line-height:1.2}
+.hist-main{flex:1;min-width:0}
+.hist-name-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.12rem}
+.hist-num{color:var(--ink4);font-size:.7rem}
+.hist-name{color:var(--ink);font-size:.96rem;letter-spacing:.14em;font-weight:600}
+.hist-q{color:var(--ink2);font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-right{display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;flex-shrink:0}
+.hist-date{color:var(--ink4);font-size:.68rem;white-space:nowrap}
+.hist-gz{color:var(--ink4);font-size:.7rem;margin:.15rem 0 .3rem;letter-spacing:.03em}
+.hist-tags{display:flex;gap:.35rem;flex-wrap:wrap}
+.hist-tag{
+  font-size:.65rem;padding:.08rem .45rem;border-radius:1px;
+  border:1px solid var(--border2);color:var(--ink4);letter-spacing:.04em;
+}
+.hist-tag.ai{border-color:var(--red-border);color:var(--red2);opacity:.8}
+.hist-tag.changed{border-color:var(--border);color:var(--ink3)}
+.hist-tag.method-time{border-color:rgba(42,60,82,.4);color:var(--yin2)}
+.hist-tag.method-manual{border-color:var(--border);color:var(--ink4)}
+.hist-tag.method-coins{border-color:var(--border);color:var(--ink4)}
+.hist-delete{
+  padding:.15rem .45rem;background:transparent;border:1px solid rgba(139,26,26,.15);
+  border-radius:1px;color:rgba(139,26,26,.4);cursor:pointer;font-size:.7rem;transition:all .15s;
+}
+.hist-delete:hover{border-color:var(--red);color:var(--red)}
+#hist-pagination{display:flex;justify-content:center;gap:.4rem;margin-top:1.2rem;flex-wrap:wrap}
+.pg-btn{
+  padding:.3rem .8rem;background:transparent;border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--ink4);cursor:pointer;font-family:inherit;font-size:.78rem;transition:all .2s;
+}
+.pg-btn.active,.pg-btn:hover{border-color:var(--red-border);color:var(--red2);background:var(--red-bg)}
+
+/* ── Settings ── */
+#btn-settings{
+  background:transparent;border:1px solid var(--border);border-radius:var(--radius);
+  width:2rem;height:2rem;color:var(--ink4);cursor:pointer;font-size:.85rem;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;
+}
+#btn-settings:hover{border-color:var(--red-border);color:var(--red2)}
+#settings-modal{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center}
+#settings-overlay{position:absolute;inset:0;background:rgba(26,18,8,.65);backdrop-filter:blur(3px)}
+#settings-box{
+  position:relative;z-index:1;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:2rem;width:min(480px,93vw);
+  box-shadow:0 12px 40px rgba(42,30,14,.3);
+  border-top:2px solid var(--red-border);
+}
+#settings-box .card-title{margin-bottom:1.4rem}
+.set-label{display:block;color:var(--ink3);font-size:.76rem;letter-spacing:.12em;margin-bottom:.4rem}
+#api-key-input{
+  width:100%;padding:.65rem 1rem;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--ink);font-family:monospace;font-size:.82rem;
+  outline:none;transition:border-color .2s;
+}
+#api-key-input:focus{border-color:rgba(42,30,14,.3)}
+.set-hint{font-size:.7rem;color:var(--ink4);margin-top:.4rem}
+.set-hint a{color:var(--ink3);text-decoration:none}
+.set-hint a:hover{color:var(--red2)}
+#model-status{color:var(--ink4);font-size:.7rem;margin-top:.3rem;line-height:1.7}
+.set-actions{display:flex;gap:.8rem;margin-top:1.4rem}
+#btn-save-key{
+  flex:1;padding:.62rem;background:var(--red);border:none;border-radius:var(--radius);
+  color:#fff;font-family:inherit;font-size:.85rem;cursor:pointer;
+  letter-spacing:.2em;transition:all .2s;
+}
+#btn-save-key:hover{background:var(--red2)}
+.btn-cancel{
+  padding:.62rem 1.1rem;background:transparent;border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--ink3);font-family:inherit;cursor:pointer;transition:all .2s;
+}
+.btn-cancel:hover{background:var(--bg3)}
+#key-msg{margin-top:.9rem;font-size:.8rem;min-height:1.2rem;text-align:center;letter-spacing:.04em}
+
+/* ── API Key 申請教學 ── */
+#settings-box{max-height:90vh;overflow-y:auto}
+.set-guide{
+  margin-top:1.2rem;border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;
+}
+.set-guide-title{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.6rem .9rem;cursor:pointer;user-select:none;
+  background:var(--bg3);font-size:.8rem;color:var(--ink2);letter-spacing:.1em;
+  transition:background .15s;
+}
+.set-guide-title:hover{background:var(--bg4)}
+#key-guide-icon{font-size:.72rem;color:var(--ink4)}
+#key-guide-body{padding:.9rem;background:var(--bg2)}
+.kg-intro{
+  font-size:.78rem;color:var(--ink2);line-height:1.8;
+  margin-bottom:.9rem;padding-bottom:.7rem;border-bottom:1px solid var(--border2);
+}
+.kg-step{display:flex;gap:.7rem;margin:.7rem 0;align-items:flex-start}
+.kg-num{
+  flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--red);color:#fff;font-size:.72rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;margin-top:.1rem;
+}
+.kg-content{flex:1}
+.kg-title{font-size:.8rem;font-weight:600;color:var(--ink);margin-bottom:.2rem;letter-spacing:.05em}
+.kg-desc{font-size:.76rem;color:var(--ink3);line-height:1.7}
+.kg-link{
+  display:inline-block;margin-top:.3rem;font-size:.76rem;
+  color:var(--red2);text-decoration:none;letter-spacing:.03em;
+}
+.kg-link:hover{text-decoration:underline}
+.kg-note{
+  display:flex;gap:.6rem;align-items:flex-start;
+  margin-top:.8rem;padding:.6rem .8rem;border-radius:2px;font-size:.74rem;line-height:1.7;
+  background:rgba(42,30,14,.04);border:1px solid var(--border2);
+}
+.kg-warn{background:rgba(139,26,26,.04);border-color:var(--red-border)}
+.kg-note-icon{flex-shrink:0;font-size:.9rem;margin-top:.05rem}
+.kg-note strong{color:var(--ink2)}
+.kg-note code{
+  font-family:monospace;font-size:.85em;background:var(--bg3);
+  padding:.05rem .3rem;border-radius:2px;
+}
+
+/* ════════════════════════════════════════
+   起卦動畫
+════════════════════════════════════════ */
+
+/* 結果卡片入場 */
+@keyframes cardEnter{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hex-card.anim-enter{animation:cardEnter .5s cubic-bezier(.22,.8,.36,1) both}
+
+/* 卦象符號出場 */
+@keyframes symbolPulse{
+  0%  {opacity:0;transform:scale(.6)}
+  60% {opacity:1;transform:scale(1.08)}
+  100%{opacity:1;transform:scale(1)}
+}
+.hex-card.anim-enter .hex-symbol{
+  animation:symbolPulse .65s cubic-bezier(.22,.8,.36,1) .1s both;
+}
+
+/* 各區塊依序淡入 */
+@keyframes fadeSlideUp{
+  from{opacity:0;transform:translateY(10px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+.hex-card.anim-enter .hex-info{
+  animation:fadeSlideUp .4s ease .2s both;
+}
+.hex-card.anim-enter .trigram-row{
+  animation:fadeSlideUp .4s ease .85s both;
+}
+.hex-card.anim-enter .guaci{
+  animation:fadeSlideUp .4s ease 1.1s both;
+}
+.hex-card.anim-enter .modern-text{
+  animation:fadeSlideUp .4s ease 1.3s both;
+}
+.hex-card.anim-enter .sec-hint,
+.hex-card.anim-enter .lines-list{
+  animation:fadeSlideUp .4s ease 1.5s both;
+}
+.hex-card.anim-enter .sec-label{
+  animation:fadeSlideUp .3s ease .9s both;
+}
+
+/* hex-visual 本身隱藏，靠 hline 自己出現 */
+.hex-card.anim-enter .hex-visual{opacity:1}
+
+/* 每爻線條入場（JS 設 animation-delay） */
+@keyframes lineIn{
+  from{opacity:0;transform:translateX(-8px)}
+  to  {opacity:1;transform:translateX(0)}
+}
+.hex-card.anim-enter .hline{
+  opacity:0;
+  animation:lineIn .32s ease both;
+}
+
+/* 爻條筆刷延伸（陽爻從左，陰爻各自從外向中） */
+@keyframes brushYang{
+  from{transform:scaleX(0);transform-origin:left center}
+  to  {transform:scaleX(1);transform-origin:left center}
+}
+@keyframes brushYin1{
+  from{transform:scaleX(0);transform-origin:left center}
+  to  {transform:scaleX(1);transform-origin:left center}
+}
+@keyframes brushYin2{
+  from{transform:scaleX(0);transform-origin:right center}
+  to  {transform:scaleX(1);transform-origin:right center}
+}
+.hex-card.anim-enter .bar-yang{
+  animation:brushYang .35s cubic-bezier(.4,0,.2,1) both;
+}
+.hex-card.anim-enter .bar-yin1{
+  animation:brushYin1 .28s cubic-bezier(.4,0,.2,1) both;
+}
+.hex-card.anim-enter .bar-yin2{
+  animation:brushYin2 .28s cubic-bezier(.4,0,.2,1) both;
+}
+
+/* 時辰起卦過場 */
+#time-cast-anim{
+  display:none;text-align:center;padding:2.5rem 1rem;
+}
+#time-cast-anim.active{display:block}
+@keyframes spinSymbol{
+  0%  {transform:rotate(0deg) scale(.5);opacity:0}
+  40% {transform:rotate(360deg) scale(1.1);opacity:1}
+  70% {transform:rotate(360deg) scale(1)}
+  100%{transform:rotate(360deg) scale(1);opacity:1}
+}
+#tca-symbol{
+  font-size:5rem;color:var(--ink);display:block;margin:0 auto .8rem;
+  animation:spinSymbol .9s cubic-bezier(.22,.8,.36,1) both;
+}
+@keyframes textReveal{
+  from{opacity:0;letter-spacing:.6em}
+  to  {opacity:1;letter-spacing:.3em}
+}
+#tca-text{
+  color:var(--ink3);font-size:.82rem;letter-spacing:.3em;
+  animation:textReveal .6s ease .5s both;
+}
+
+/* 反應面板和整體結果區入場 */
+@keyframes resultWrapIn{
+  from{opacity:0}to{opacity:1}
+}
+#result-wrap.anim-in{animation:resultWrapIn .4s ease both}
+
+/* ── Splash Screen ── */
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(26,18,8,.82);
+  backdrop-filter:blur(6px);
+  animation:splashIn .5s ease;
+}
+#splash.hide{
+  animation:splashOut .45s ease forwards;
+}
+@keyframes splashIn{from{opacity:0}to{opacity:1}}
+@keyframes splashOut{from{opacity:1}to{opacity:0;pointer-events:none}}
+
+#splash-card{
+  position:relative;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:0 24px 80px rgba(26,18,8,.6);
+  width:min(380px,90vw);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  animation:cardRise .55s cubic-bezier(.22,.8,.36,1) .1s both;
+}
+@keyframes cardRise{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* 四角裝飾 */
+#splash-corners{position:absolute;inset:10px;pointer-events:none;z-index:2}
+.sc{position:absolute;width:18px;height:18px;border-color:var(--red);border-style:solid}
+.sc.tl{top:0;left:0;border-width:1.5px 0 0 1.5px}
+.sc.tr{top:0;right:0;border-width:1.5px 1.5px 0 0}
+.sc.bl{bottom:0;left:0;border-width:0 0 1.5px 1.5px}
+.sc.br{bottom:0;right:0;border-width:0 1.5px 1.5px 0}
+
+#splash-img{
+  width:100%;
+  aspect-ratio:3/4;
+  object-fit:cover;
+  object-position:center top;
+  display:block;
+  border-bottom:1px solid var(--border);
+}
+
+#splash-body{
+  padding:1.4rem 1.6rem 1.8rem;
+  text-align:center;
+  background:var(--bg2);
+}
+#splash-title{
+  font-size:1.05rem;letter-spacing:.45em;color:var(--ink);
+  font-weight:600;margin-bottom:.4rem;
+}
+#splash-sub{
+  font-size:.7rem;letter-spacing:.06em;color:var(--ink4);
+  line-height:1.7;margin-bottom:1.2rem;
+}
+#splash-btn{
+  width:100%;padding:.75rem;
+  background:var(--red);border:none;border-radius:var(--radius);
+  color:#fff;font-family:inherit;font-size:.95rem;letter-spacing:.5em;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 2px 12px rgba(139,26,26,.25);
+}
+#splash-btn:hover{background:var(--red2);box-shadow:0 4px 20px rgba(139,26,26,.35)}
+#splash-btn:active{transform:translateY(1px)}
+
+/* ── Footer ── */
+#ftr{
+  text-align:center;padding:2rem 1rem 1.4rem;color:var(--ink5);font-size:.66rem;
+  letter-spacing:.12em;border-top:1px solid var(--border2);margin-top:2rem;
+  line-height:2;
+}
+#ftr-author{
+  display:block;margin-top:.2rem;
+  color:var(--red);font-size:.7rem;letter-spacing:.25em;
+  opacity:.7;
+}
+
+/* ══════════════════════════════════════════════
+   1元硬幣教學區塊
+══════════════════════════════════════════════ */
+.tutorial-toggle-btn{
+  display:block;width:100%;text-align:left;
+  padding:.6rem .9rem;margin-bottom:.5rem;
+  background:var(--bg3);border:1px dashed var(--border);
+  border-radius:var(--radius);
+  color:var(--ink2);font-family:inherit;font-size:.83rem;letter-spacing:.04em;
+  cursor:pointer;transition:background .2s;
+}
+.tutorial-toggle-btn:hover{background:var(--bg4)}
+.tutorial-toggle-btn.open{border-style:solid;border-color:var(--red-border);color:var(--red)}
+
+.t-box{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1rem;margin-bottom:.8rem;
+}
+.t-step{
+  display:flex;gap:.8rem;padding-bottom:.9rem;margin-bottom:.9rem;
+  border-bottom:1px solid var(--border2);
+}
+.t-step:last-of-type{border-bottom:none;margin-bottom:0}
+.t-num{
+  min-width:2rem;height:2rem;
+  background:var(--red);color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;font-weight:600;letter-spacing:0;flex-shrink:0;
+}
+.t-example .t-num{
+  background:var(--ink3);border-radius:4px;width:2.6rem;height:2rem;font-size:.72rem
+}
+.t-body{flex:1;min-width:0}
+.t-title{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.35rem}
+.t-desc{font-size:.8rem;color:var(--ink3);line-height:1.7}
+
+/* 硬幣正反面 */
+.coin-faces{display:flex;align-items:center;gap:.8rem;margin-top:.5rem;flex-wrap:wrap}
+.cf-box{
+  flex:1;min-width:100px;max-width:150px;
+  text-align:center;padding:.6rem .4rem;
+  border-radius:var(--radius);border:1px solid var(--border);
+}
+.yang-cf{background:rgba(210,180,100,.12);border-color:rgba(140,96,24,.28)}
+.yin-cf{background:rgba(42,60,82,.07);border-color:rgba(42,60,82,.22)}
+.cf-ico{font-size:1.6rem;font-weight:700;margin-bottom:.2rem;color:var(--ink)}
+.yang-cf .cf-ico{color:#7a5010}
+.yin-cf  .cf-ico{color:var(--yin)}
+.cf-label{font-size:.72rem;color:var(--ink3);margin-bottom:.2rem}
+.cf-pts{font-size:.78rem;font-weight:600;color:var(--ink2)}
+.cf-vs{font-size:.9rem;color:var(--ink4);font-weight:600}
+
+/* 爻型對照表 */
+.coin-tbl{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:.5rem}
+.coin-tbl th,.coin-tbl td{
+  padding:.3rem .5rem;border:1px solid var(--border);text-align:center;
+}
+.coin-tbl thead th{background:var(--bg3);color:var(--ink2);font-weight:600}
+.ctr-6{background:rgba(139,26,26,.04)}
+.ctr-7{background:rgba(210,180,100,.06)}
+.ctr-8{background:rgba(42,60,82,.04)}
+.ctr-9{background:rgba(139,26,26,.04)}
+.ct-chg{color:var(--red);font-weight:600}
+.pts{color:var(--ink4);font-size:.72rem}
+
+/* 投擲順序 */
+.throw-order{margin-top:.5rem;display:flex;flex-direction:column-reverse;gap:2px}
+.to-row{
+  padding:.25rem .7rem;font-size:.78rem;color:var(--ink3);
+  background:var(--bg3);border-radius:2px;border-left:2px solid var(--border);
+}
+.to-top{border-left-color:var(--ink3)}
+.to-bot{border-left-color:var(--red);color:var(--ink2);font-weight:600;background:var(--red-bg)}
+
+/* 範例 */
+.eg-lines{display:flex;flex-direction:column;gap:3px;margin-top:.5rem}
+.eg-line{
+  display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;
+  font-size:.78rem;padding:.22rem .5rem;
+  background:var(--bg);border-radius:2px;border:1px solid var(--border2);
+}
+.eg-pos{color:var(--ink3);min-width:5em}
+.eg-throw{font-weight:600;color:var(--ink2);min-width:7em}
+.eg-act{font-size:.75rem}
+.yang-act{color:#7a5010}
+.yin-act{color:var(--yin)}
+.chg-act{color:var(--red);font-weight:600}
+.eg-note{margin-top:.4rem;font-size:.73rem;color:var(--ink3);font-style:italic}
+
+/* 底部提示 */
+.t-tip{
+  margin-top:.7rem;padding:.6rem .8rem;
+  background:var(--red-bg);border:1px solid var(--red-border);
+  border-radius:var(--radius);font-size:.78rem;color:var(--ink2);line-height:1.7;
+}
+
+/* ══════════════════════════════════════════════
+   命卦推算頁
+══════════════════════════════════════════════ */
+
+/* 系統分隔標題 */
+.mingua-sys-label{
+  display:flex;align-items:center;gap:.5rem;
+  font-size:.82rem;font-weight:700;letter-spacing:.15em;color:var(--ink2);
+  margin:.6rem 0 .5rem;padding:.25rem 0;
+  border-bottom:1px solid rgba(0,0,0,.08);
+}
+.sys-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:1.4rem;height:1.4rem;border-radius:50%;
+  background:var(--red-bg);border:1px solid var(--red-border);
+  color:var(--red);font-size:.72rem;font-weight:700;flex-shrink:0;
+}
+.mh-num{
+  background:rgba(42,60,82,.08);border-color:rgba(42,60,82,.25);color:var(--ink2);
+}
+.sys-sub{
+  font-size:.68rem;font-weight:400;color:var(--ink4);letter-spacing:.05em;margin-left:.2rem;
+}
+
+/* 命卦 AI 按鈕 */
+.mingua-ai-wrap{margin-top:1rem;border-top:1px solid rgba(0,0,0,.07);padding-top:.8rem}
+.mingua-ai-btn{
+  width:100%;padding:.65rem;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);font-family:inherit;font-size:.88rem;
+  color:var(--ink2);letter-spacing:.15em;cursor:pointer;transition:.2s;
+}
+.mingua-ai-btn:hover{background:var(--red-bg);border-color:var(--red-border);color:var(--red)}
+.mingua-ai-btn:disabled{opacity:.5;cursor:not-allowed}
+.mh-ai-btn:hover{background:rgba(42,60,82,.08);border-color:rgba(42,60,82,.25);color:var(--ink)}
+.mingua-ai-result{margin-top:.7rem;padding:.75rem .9rem;
+  background:var(--bg2);border-radius:var(--radius);font-size:.84rem;
+  color:var(--ink2);line-height:1.8;border:1px solid var(--border)}
+.mingua-ai-result .ai-sec-title{
+  font-weight:700;color:var(--ink);margin:.6rem 0 .2rem;display:block
+}
+.mingua-ai-result .ai-model-note{
+  font-size:.65rem;color:var(--ink4);margin-top:.8rem;text-align:right
+}
+.mingua-ai-result .ai-loading{color:var(--ink4);font-style:italic}
+
+/* 梅花易數卡 */
+.mh-card{border-top:2px solid rgba(42,60,82,.15)}
+#btn-calc-meihua{
+  padding:.7rem;margin-top:.4rem;
+  background:var(--ink2);color:#f5efe6;border:none;border-radius:var(--radius);
+  font-family:inherit;font-size:.9rem;letter-spacing:.2em;cursor:pointer;transition:.2s;
+}
+#btn-calc-meihua:hover{background:var(--ink)}
+
+/* 日期欄位 */
+.mh-date-row{display:flex;gap:.5rem;margin:.2rem 0}
+.mh-date-item{flex:1;display:flex;flex-direction:column;gap:.2rem}
+.mh-date-item select{
+  padding:.55rem .4rem;font-size:.85rem;font-family:inherit;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--bg2);color:var(--ink);cursor:pointer;
+}
+.mh-date-item select:focus{outline:none;border-color:rgba(42,60,82,.4)}
+
+/* 梅花結果卡 */
+.mh-result-card{margin-top:.8rem;border-top:2px solid rgba(42,60,82,.2)}
+.mh-res-header{display:flex;gap:.9rem;align-items:flex-start;margin-bottom:.5rem}
+.mh-res-sym{
+  font-size:3rem;line-height:1;color:var(--ink);
+  text-shadow:0 2px 8px rgba(0,0,0,.15);flex-shrink:0;padding-top:.1rem;
+}
+.mh-res-info{flex:1}
+.mh-res-birth{font-size:.7rem;color:var(--ink4);letter-spacing:.05em}
+.mh-res-name{font-size:1.25rem;font-weight:700;color:var(--ink);letter-spacing:.15em;margin:.15rem 0 .2rem}
+.mh-res-detail{font-size:.78rem;color:var(--ink3)}
+.mh-res-calc{
+  font-size:.64rem;color:var(--ink4);margin-top:.3rem;
+  background:var(--bg3);padding:.2rem .4rem;border-radius:3px;letter-spacing:.03em;
+}
+
+/* 動爻高亮 */
+.mh-moving{background:rgba(139,26,26,.06) !important}
+.mh-moving .hline-num{color:var(--red);font-weight:700}
+
+/* 之卦橫排 */
+.mh-zhigua-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:1rem;padding:.6rem 0;
+}
+.mh-zg-item{text-align:center}
+.mh-zg-sym{font-size:2rem;line-height:1;color:var(--ink)}
+.mh-zg-name{font-size:.85rem;font-weight:700;color:var(--ink2);margin:.15rem 0 .1rem;letter-spacing:.1em}
+.mh-zg-label{font-size:.65rem;color:var(--ink4)}
+.mh-zg-arrow{font-size:1.3rem;color:var(--red);opacity:.6}
+.mh-zhigua-note{
+  text-align:center;font-size:.72rem;color:var(--ink4);
+  padding:.3rem;border-top:1px solid rgba(0,0,0,.06);
+}
+.mingua-intro{
+  font-size:.82rem;color:var(--ink3);margin-bottom:1rem;line-height:1.7;
+}
+.mingua-form{display:flex;flex-direction:column;gap:.4rem}
+.mingua-form input{
+  padding:.6rem .8rem;font-size:.95rem;
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--ink);font-family:inherit;
+}
+.mingua-form input:focus{outline:none;border-color:var(--red-border)}
+#mingua-gender-row{display:flex;gap:.5rem;margin:.2rem 0 .4rem}
+.gender-btn{
+  flex:1;padding:.5rem;font-family:inherit;font-size:.85rem;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--ink2);cursor:pointer;transition:all .2s;letter-spacing:.08em;
+}
+.gender-btn.active{
+  background:var(--red-bg);border-color:var(--red-border);color:var(--red);font-weight:600
+}
+#btn-calc-mingua{
+  padding:.7rem;margin-top:.4rem;
+  background:var(--red);border:none;border-radius:var(--radius);
+  color:#fff;font-family:inherit;font-size:.9rem;letter-spacing:.4em;
+  cursor:pointer;transition:all .2s;
+}
+#btn-calc-mingua:hover{background:var(--red2)}
+.mingua-err{font-size:.8rem;color:var(--red);min-height:1.2em}
+
+/* 命卦結果卡 */
+.mingua-result-card{margin-top:.8rem}
+.mg-header{display:flex;gap:1rem;align-items:flex-start;margin-bottom:.8rem}
+.mg-sym{
+  font-size:3.5rem;line-height:1;color:var(--ink);
+  text-shadow:0 2px 8px rgba(26,18,8,.15);
+}
+.mg-info{flex:1}
+.mg-num{font-size:.78rem;color:var(--ink3);letter-spacing:.08em}
+.mg-name{font-size:1.5rem;font-weight:700;color:var(--ink);letter-spacing:.2em;margin:.1rem 0}
+.mg-badges{display:flex;gap:.4rem;flex-wrap:wrap}
+.mg-group-badge{
+  font-size:.72rem;padding:.15rem .5rem;border-radius:2px;font-weight:600;letter-spacing:.06em;
+}
+.e4-badge{background:rgba(42,60,82,.1);color:var(--yin);border:1px solid rgba(42,60,82,.25)}
+.w4-badge{background:rgba(139,26,26,.08);color:var(--red);border:1px solid var(--red-border)}
+.mg-ele-badge{
+  font-size:.72rem;padding:.15rem .5rem;
+  background:var(--bg3);border:1px solid var(--border);border-radius:2px;color:var(--ink3);
+}
+.mg-trait{
+  font-size:.85rem;color:var(--ink2);
+  border-left:2px solid var(--red);padding:.4rem .8rem;
+  background:var(--red-bg);border-radius:0 var(--radius) var(--radius) 0;
+  margin-bottom:.2rem;line-height:1.7;font-style:italic;
+}
+
+/* 方位格 */
+.dir-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin:.5rem 0}
+.dir-item{
+  text-align:center;padding:.5rem .3rem;
+  border-radius:var(--radius);border:1px solid var(--border);
+  font-size:.72rem;
+}
+.dir-sym{font-size:1.3rem;margin-bottom:.15rem}
+.dir-name{font-weight:600;color:var(--ink2);margin-bottom:.1rem;font-size:.76rem}
+.dir-type{font-size:.65rem;color:var(--ink3)}
+
+/* 吉方：由強到弱，顏色漸淡 */
+.dir-shengqi{background:rgba(139,26,26,.09);border-color:rgba(139,26,26,.35)}
+.dir-shengqi .dir-type{color:var(--red);font-weight:600}
+.dir-tianyi {background:rgba(139,26,26,.05);border-color:rgba(139,26,26,.2)}
+.dir-yannian{background:rgba(42,60,82,.07);border-color:rgba(42,60,82,.2)}
+.dir-fuwei  {background:var(--bg3);border-color:var(--border)}
+
+/* 凶方 */
+.dir-huohai,.dir-liusha,.dir-wugui,.dir-juming{
+  background:rgba(42,30,14,.04);border-color:var(--border);
+}
+.dir-juming{background:rgba(60,20,20,.06);border-color:rgba(139,26,26,.15)}
+.dir-juming .dir-type{color:rgba(139,26,26,.65);font-style:italic}
+.dir-wugui .dir-type{color:rgba(100,60,20,.7)}
+
+.mg-note{
+  margin-top:.8rem;padding:.55rem .8rem;
+  background:var(--bg3);border-radius:var(--radius);
+  font-size:.75rem;color:var(--ink3);line-height:1.7;
+}
+
+/* 速查表 */
+.mq-group{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;margin-bottom:.3rem;border-radius:var(--radius)}
+.e4-group{background:rgba(42,60,82,.06);border:1px solid rgba(42,60,82,.15)}
+.w4-group{background:rgba(139,26,26,.05);border:1px solid var(--red-border)}
+.mq-label{font-size:.75rem;font-weight:600;min-width:4em;color:var(--ink2)}
+.mq-items{display:flex;flex-wrap:wrap;gap:.3rem}
+.mq-items span{
+  font-size:.73rem;padding:.12rem .4rem;
+  background:var(--bg2);border:1px solid var(--border);border-radius:2px;color:var(--ink3);
+}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  #hdr{padding:.6rem 1rem}
+  #logo{font-size:.9rem}
+  .hex-header{flex-direction:column;gap:.8rem}
+  .hex-symbol{font-size:3.2rem}
+  #hex-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}
+  #cat-grid{grid-template-columns:repeat(2,1fr)}
+  .trigram-row{gap:.4rem}
+  .hist-q{white-space:normal}
+}

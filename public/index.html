@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>易經占卦系統</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     啟動畫面
+══════════════════════════════════════════════ -->
+<div id="splash">
+  <div id="splash-card">
+    <div id="splash-corners">
+      <span class="sc tl"></span><span class="sc tr"></span>
+      <span class="sc bl"></span><span class="sc br"></span>
+    </div>
+    <img id="splash-img" src="/images/splash.jpg" alt="易經占卦師" draggable="false"/>
+    <div id="splash-body">
+      <div id="splash-title">易 經 占 卦 系 統</div>
+      <div id="splash-sub">周易六十四卦全解 · 結合現代生活的決策反思工具</div>
+      <button id="splash-btn" onclick="App.closeSplash()">開　始　占　卦</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 頂部導航 ── -->
+<header id="hdr">
+  <div id="hdr-left">
+    <span id="logo">☯ 易經占卦</span>
+    <span id="ganzhi-bar"></span>
+  </div>
+  <nav id="nav">
+    <button class="nav-btn active" data-page="cast">起卦</button>
+    <button class="nav-btn" data-page="index">卦象索引</button>
+    <button class="nav-btn" data-page="history">歷史記錄</button>
+    <button class="nav-btn" data-page="mingua">命卦</button>
+  </nav>
+  <div id="ai-status" onclick="App.openSettings()" title="點擊設定 API Key"></div>
+  <button id="btn-settings" onclick="App.openSettings()" title="設定">⚙</button>
+</header>
+
+<!-- ── 設定 Modal ── -->
+<div id="settings-modal" style="display:none">
+  <div id="settings-overlay" onclick="App.closeSettings()"></div>
+  <div id="settings-box">
+    <div class="card-title">⚙ 系統設定</div>
+
+    <!-- AI Key 輸入 -->
+    <label class="set-label">Google AI API Key</label>
+    <input id="api-key-input" type="password" placeholder="AIzaSy…" autocomplete="off"/>
+    <div class="set-actions">
+      <button id="btn-save-key" onclick="App.saveApiKey()">儲存並啟用</button>
+      <button onclick="App.closeSettings()" class="btn-cancel">取消</button>
+    </div>
+    <div id="key-msg"></div>
+
+    <!-- 模型狀態 -->
+    <label class="set-label" style="margin-top:.8rem">AI 模型（自動切換）</label>
+    <div id="model-status" class="set-hint"></div>
+
+    <!-- 申請教學 -->
+    <div class="set-guide">
+      <div class="set-guide-title" onclick="App.toggleKeyGuide()">
+        <span>📖 如何免費取得 Google AI Key？</span>
+        <span id="key-guide-icon">▾</span>
+      </div>
+      <div id="key-guide-body">
+
+        <div class="kg-intro">
+          Google AI Studio 提供<strong>免費額度</strong>，足夠個人日常占卦使用。<br>
+          Key 儲存在你自己的瀏覽器，不會上傳至本伺服器。
+        </div>
+
+        <div class="kg-step">
+          <div class="kg-num">1</div>
+          <div class="kg-content">
+            <div class="kg-title">前往 Google AI Studio</div>
+            <div class="kg-desc">點擊下方連結，使用 Google 帳號登入（免費，不需信用卡）</div>
+            <a class="kg-link" href="https://aistudio.google.com/app/apikey" target="_blank">
+              🔗 aistudio.google.com/app/apikey
+            </a>
+          </div>
+        </div>
+
+        <div class="kg-step">
+          <div class="kg-num">2</div>
+          <div class="kg-content">
+            <div class="kg-title">建立 API Key</div>
+            <div class="kg-desc">登入後點擊「<strong>Create API key</strong>」按鈕 → 選擇「Create API key in new project」</div>
+          </div>
+        </div>
+
+        <div class="kg-step">
+          <div class="kg-num">3</div>
+          <div class="kg-content">
+            <div class="kg-title">複製 Key</div>
+            <div class="kg-desc">畫面會顯示一串以 <code>AIzaSy</code> 開頭的金鑰，點擊複製圖示</div>
+          </div>
+        </div>
+
+        <div class="kg-step">
+          <div class="kg-num">4</div>
+          <div class="kg-content">
+            <div class="kg-title">貼回本系統</div>
+            <div class="kg-desc">將複製的 Key 貼到上方輸入框，按「儲存並啟用」即可使用所有 AI 功能</div>
+          </div>
+        </div>
+
+        <div class="kg-note">
+          <span class="kg-note-icon">ℹ️</span>
+          <div>
+            <strong>免費額度說明：</strong>Gemini 2.5 Flash 每分鐘可呼叫 10 次，每天 500 次，
+            個人占卦完全足夠。若超出額度，系統會自動切換至備用模型。
+          </div>
+        </div>
+
+        <div class="kg-note kg-warn">
+          <span class="kg-note-icon">🔒</span>
+          <div>
+            <strong>安全說明：</strong>你的 API Key 僅存於本瀏覽器的 localStorage，
+            不會傳送給任何第三方，也不會儲存在本系統伺服器。
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: 起卦
+══════════════════════════════════════════════ -->
+<div id="page-cast" class="page active">
+  <div class="container">
+
+    <!-- 時辰顯示 -->
+    <div id="shichen-card">
+      <div id="shichen-info"></div>
+      <button id="btn-time-cast" onclick="App.castByTime()">🕐 時辰起卦</button>
+    </div>
+
+    <!-- ── 起卦守則 ── -->
+    <div id="guide-card">
+      <div id="guide-header" onclick="App.toggleGuide()">
+        <span>📋 起卦前請閱讀</span>
+        <span id="guide-icon">▾</span>
+      </div>
+      <div id="guide-body">
+        <div class="guide-section">
+          <div class="guide-title">① 釐清並設定明確問題（最重要）</div>
+          <div class="guide-row"><span class="guide-tag must">一事一問</span>一次只能問一件事，切忌雜問。</div>
+          <div class="guide-row"><span class="guide-tag must">具體明確</span>問題須包含時間、範圍、主體，拒絕模糊提問。</div>
+          <div class="guide-example bad">❌ 模糊：這份工作好不好？</div>
+          <div class="guide-example good">⭕ 具體：在 2026 年第三季，我轉換到 A 產業的發展如何？</div>
+        </div>
+        <div class="guide-section">
+          <div class="guide-title">② 靜心與環境準備</div>
+          <div class="guide-row"><span class="guide-tag prep">沉澱心靈</span>起卦前深呼吸，心中默念想問的問題三次。</div>
+          <div class="guide-row"><span class="guide-tag prep">環境單純</span>選擇安靜、不被打擾的空間，手機靜音。</div>
+          <div class="guide-row"><span class="guide-tag prep">儀式感</span>可洗手、淨桌，讓自己處於莊重尊重的狀態。</div>
+        </div>
+        <div class="guide-section guide-proxy">
+          <div class="guide-title">③ 幫別人算時</div>
+          <div class="guide-row">必須聲明：<strong>「弟子〔你的名字〕幫〔對方名字〕算」</strong>，卦才算數。可在下方開啟「幫別人算」填入姓名。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 引導式問事卡 ── -->
+    <div class="card" id="q-card">
+
+      <!-- STEP 1: 分類 -->
+      <div class="card-title">這件事關於⋯</div>
+      <div id="cat-grid">
+        <button class="cat-btn" data-cat="事業" onclick="App.setCategory(this)">💼 事業</button>
+        <button class="cat-btn" data-cat="感情" onclick="App.setCategory(this)">❤️ 感情</button>
+        <button class="cat-btn" data-cat="財務" onclick="App.setCategory(this)">💰 財務</button>
+        <button class="cat-btn" data-cat="健康" onclick="App.setCategory(this)">🌿 健康</button>
+        <button class="cat-btn" data-cat="人際" onclick="App.setCategory(this)">🤝 人際</button>
+        <button class="cat-btn" data-cat="其他" onclick="App.setCategory(this)">📝 其他</button>
+      </div>
+
+      <!-- STEP 2: 主問題 -->
+      <div class="q-section-label">你想問的是⋯</div>
+      <input id="q-input" placeholder="描述你的狀況或問題（可留空）" />
+
+      <!-- 幫別人算 -->
+      <div id="proxy-toggle" onclick="App.toggleProxy()">
+        <span id="proxy-toggle-icon">☐</span> 幫別人算
+      </div>
+      <div id="proxy-fields" style="display:none">
+        <div class="proxy-row">
+          <input id="proxy-caster" placeholder="弟子姓名（你自己）" oninput="App.updateProxyLabel()" />
+          <input id="proxy-subject" placeholder="被問者姓名（對方）" oninput="App.updateProxyLabel()" />
+        </div>
+        <div id="proxy-label"></div>
+      </div>
+
+      <!-- STEP 3: 選填背景 -->
+      <div id="q-optional-toggle" onclick="App.toggleOptional()">
+        <span id="q-toggle-icon">＋</span> 補充背景，讓 AI 解讀更準確（選填）
+      </div>
+      <div id="q-optional-fields" style="display:none">
+        <input id="q-lean" placeholder="你現在傾向怎麼做？（說出心裡的預設答案）" />
+        <input id="q-worry" placeholder="你最擔心的是什麼？" />
+      </div>
+
+      <!-- STEP 4: 起卦方式 -->
+      <div class="q-section-label" style="margin-top:.9rem">起卦方式</div>
+      <div id="method-row">
+        <button class="mtd-btn active" id="btn-coins" onclick="App.setMethod('coins')">🪙 三枚銅錢</button>
+        <button class="mtd-btn" id="btn-manual" onclick="App.setMethod('manual')">✍️ 手動輸入</button>
+      </div>
+      <div id="manual-wrap" style="display:none">
+        <!-- ── 1元硬幣圖解教學 ── -->
+        <button class="tutorial-toggle-btn" id="tutorial-btn" onclick="App.toggleTutorial()">
+          📚 如何用 1 元硬幣起卦？點此展開圖解教學 ▾
+        </button>
+        <div id="coin-tutorial" style="display:none">
+          <div class="t-box">
+
+            <!-- 步驟一 -->
+            <div class="t-step">
+              <div class="t-num">①</div>
+              <div class="t-body">
+                <div class="t-title">準備 3 枚 1 元硬幣，靜心默想問題</div>
+                <div class="t-desc">取 3 枚新台幣 1 元硬幣，雙手合捧，閉眼約 10 秒，心中默念你的問題，再輕輕搖動後投出。</div>
+              </div>
+            </div>
+
+            <!-- 步驟二 -->
+            <div class="t-step">
+              <div class="t-num">②</div>
+              <div class="t-body">
+                <div class="t-title">認識正反面的點數</div>
+                <div class="coin-faces">
+                  <div class="cf-box yang-cf">
+                    <div class="cf-ico">壹</div>
+                    <div class="cf-label">字面（壹圓）</div>
+                    <div class="cf-pts">＝ 3 點（陽）</div>
+                  </div>
+                  <div class="cf-vs">VS</div>
+                  <div class="cf-box yin-cf">
+                    <div class="cf-ico">花</div>
+                    <div class="cf-label">花面（梅花）</div>
+                    <div class="cf-pts">＝ 2 點（陰）</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 步驟三 -->
+            <div class="t-step">
+              <div class="t-num">③</div>
+              <div class="t-body">
+                <div class="t-title">三枚同時投出，合計點數，對照下表選爻</div>
+                <table class="coin-tbl">
+                  <thead>
+                    <tr><th>三枚結果</th><th>合計</th><th>爻型</th><th>說明</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ctr-6">
+                      <td>花＋花＋花 <span class="pts">(2+2+2)</span></td>
+                      <td><strong>6</strong></td>
+                      <td><span class="ct-chg">━×━ 老陰</span></td>
+                      <td>動爻・陰→陽</td>
+                    </tr>
+                    <tr class="ctr-7">
+                      <td>花＋花＋字 <span class="pts">(2+2+3)</span></td>
+                      <td><strong>7</strong></td>
+                      <td>━━━ 少陽</td>
+                      <td>靜陽・穩定</td>
+                    </tr>
+                    <tr class="ctr-8">
+                      <td>花＋字＋字 <span class="pts">(2+3+3)</span></td>
+                      <td><strong>8</strong></td>
+                      <td>━ ━ 少陰</td>
+                      <td>靜陰・穩定</td>
+                    </tr>
+                    <tr class="ctr-9">
+                      <td>字＋字＋字 <span class="pts">(3+3+3)</span></td>
+                      <td><strong>9</strong></td>
+                      <td><span class="ct-chg">━○━ 老陽</span></td>
+                      <td>動爻・陽→陰</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- 步驟四 -->
+            <div class="t-step">
+              <div class="t-num">④</div>
+              <div class="t-body">
+                <div class="t-title">重複 6 次，由下往上填入（初爻→上爻）</div>
+                <div class="throw-order">
+                  <div class="to-row to-top">⑥ 上爻 ← 第 6 次投擲</div>
+                  <div class="to-row">⑤ 五爻 ← 第 5 次投擲</div>
+                  <div class="to-row">④ 四爻 ← 第 4 次投擲</div>
+                  <div class="to-row">③ 三爻 ← 第 3 次投擲</div>
+                  <div class="to-row">② 二爻 ← 第 2 次投擲</div>
+                  <div class="to-row to-bot">① 初爻 ← 第 1 次投擲 ⬅ 從這裡開始</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 範例 -->
+            <div class="t-step t-example">
+              <div class="t-num">範例</div>
+              <div class="t-body">
+                <div class="t-title">實際投擲示範（依此操作手動輸入按鈕）</div>
+                <div class="eg-lines">
+                  <div class="eg-line"><span class="eg-pos">初爻 1st</span><span class="eg-throw">花花字 ＝ 7</span><span class="eg-act yang-act">→ 選「少陽 ━━━」</span></div>
+                  <div class="eg-line"><span class="eg-pos">二爻 2nd</span><span class="eg-throw">花花花 ＝ 6</span><span class="eg-act chg-act">→ 選「老陰 ━×━」（動爻！）</span></div>
+                  <div class="eg-line"><span class="eg-pos">三爻 3rd</span><span class="eg-throw">花字字 ＝ 8</span><span class="eg-act yin-act">→ 選「少陰 ━ ━」</span></div>
+                  <div class="eg-line"><span class="eg-pos">四爻 4th</span><span class="eg-throw">字字字 ＝ 9</span><span class="eg-act chg-act">→ 選「老陽 ━○━」（動爻！）</span></div>
+                  <div class="eg-line"><span class="eg-pos">五爻 5th</span><span class="eg-throw">花花字 ＝ 7</span><span class="eg-act yang-act">→ 選「少陽 ━━━」</span></div>
+                  <div class="eg-line"><span class="eg-pos">上爻 6th</span><span class="eg-throw">花字字 ＝ 8</span><span class="eg-act yin-act">→ 選「少陰 ━ ━」</span></div>
+                </div>
+                <div class="eg-note">↑ 本例有 2 個動爻（二爻老陰、四爻老陽），系統會自動生成「之卦」供對照</div>
+              </div>
+            </div>
+
+            <div class="t-tip">💡 <strong>動爻</strong>是本次占卦最關鍵的訊息。老陽（9）物極必反、陽盛轉陰；老陰（6）陰極生陽。動爻所在的爻位，正是這件事最需要關注的地方。</div>
+          </div>
+        </div>
+        <!-- ── 手動選爻 ── -->
+        <p class="hint">選擇每爻爻性（第一爻為最下爻）：</p>
+        <div id="manual-lines"></div>
+      </div>
+      <button id="cast-btn" onclick="App.startCast()">起　卦</button>
+    </div>
+
+    <!-- 投錢動畫 -->
+    <div class="card" id="cast-anim" style="display:none">
+      <div class="card-title" id="cast-title">正在起卦⋯</div>
+      <div id="coins-wrap">
+        <div class="coin coin-h" id="c0">☰</div>
+        <div class="coin coin-h" id="c1">☰</div>
+        <div class="coin coin-h" id="c2">☰</div>
+      </div>
+      <div id="cast-line-label">第一爻</div>
+      <div id="line-progress"></div>
+    </div>
+
+    <!-- 時辰起卦過場 -->
+    <div id="time-cast-anim">
+      <span id="tca-symbol">☯</span>
+      <div id="tca-text">以時辰起卦，觀象感應⋯</div>
+    </div>
+
+    <!-- ── 結果區 ── -->
+    <div id="result-wrap" style="display:none">
+
+      <!-- 第一反應 -->
+      <div id="reaction-panel" class="card">
+        <div class="reaction-title">看到這個卦，你的第一反應是？</div>
+        <div class="reaction-hint">誠實的反應往往就是你心裡真正的答案</div>
+        <div id="reaction-btns">
+          <button class="react-btn" onclick="App.setReaction(this,'relieved')">😮‍💨 鬆了一口氣</button>
+          <button class="react-btn" onclick="App.setReaction(this,'disappointed')">😔 有點失望</button>
+          <button class="react-btn" onclick="App.setReaction(this,'confused')">🤔 有點疑惑</button>
+          <button class="react-btn" onclick="App.setReaction(this,'agree')">✅ 完全認同</button>
+        </div>
+        <div id="reaction-insight"></div>
+      </div>
+
+      <div class="section-deco">本卦</div>
+      <div id="main-card" class="hex-card"></div>
+
+      <!-- AI 解卦 -->
+      <div id="ai-section">
+        <!-- 風格選擇 -->
+        <div id="ai-style-row">
+          <span class="style-label">解讀風格：</span>
+          <button class="style-btn active" data-style="friend" onclick="App.setAiStyle(this)">👥 朋友</button>
+          <button class="style-btn" data-style="strict" onclick="App.setAiStyle(this)">📚 嚴師</button>
+          <button class="style-btn" data-style="strategy" onclick="App.setAiStyle(this)">⚡ 策略</button>
+        </div>
+        <div class="ai-btn-group">
+          <button id="ai-btn" onclick="App.doAI()">✦ AI 深度解卦</button>
+          <span class="ai-btn-note">讀卦意象・給感悟與方向</span>
+        </div>
+        <div id="ai-result" style="display:none">
+          <div class="card-title">AI 解卦</div>
+          <div id="ai-text"></div>
+        </div>
+
+        <div class="copy-prompt-wrap">
+          <button id="copy-ai-prompt-btn" onclick="App.copyAIPrompt()">📋 複製解卦指令</button>
+          <span class="copy-prompt-note">可貼至 ChatGPT・Claude・Gemini 等 AI 解析</span>
+        </div>
+
+        <div class="ai-btn-group">
+          <button id="trad-ai-btn" onclick="App.doTraditionalAI()">☯ 六爻傳統解析</button>
+          <span class="ai-btn-note trad-note">算卦邏輯・直接論斷吉凶人事</span>
+        </div>
+        <div id="trad-ai-result" style="display:none">
+          <div class="card-title trad-card-title">傳統六爻卜法解析</div>
+          <div id="trad-ai-text"></div>
+        </div>
+
+        <div class="copy-prompt-wrap">
+          <button id="copy-prompt-btn" onclick="App.copyTraditionalPrompt()">📋 複製六爻指令</button>
+          <span class="copy-prompt-note">可貼至 ChatGPT・Claude・Gemini 等 AI 解析</span>
+        </div>
+      </div>
+
+      <div id="change-wrap" style="display:none">
+        <div class="change-arrow" id="change-arrow">↓ 動爻變化 ↓</div>
+        <div class="section-deco">之　卦</div>
+        <div id="changed-card" class="hex-card"></div>
+      </div>
+
+      <div id="result-actions">
+        <button class="action-btn" onclick="App.saveReading()">💾 儲存記錄</button>
+        <button class="action-btn" id="btn-export" onclick="App.exportCard()">📄 導出圖檔</button>
+        <button class="action-btn" onclick="App.resetAll()">↺ 重新起卦</button>
+      </div>
+      <div id="result-actions-trad">
+        <button class="action-btn action-btn-trad" id="trad-export-btn" onclick="App.exportTradResult()">📜 導出六爻解析圖</button>
+      </div>
+      <div id="save-msg"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: 卦象索引
+══════════════════════════════════════════════ -->
+<div id="page-index" class="page" style="display:none">
+  <div class="container">
+    <div class="card">
+      <div class="card-title">六十四卦索引</div>
+      <input id="hex-search" placeholder="搜尋卦名、關鍵字…" oninput="App.filterIndex(this.value)" />
+      <div id="trigram-filter">
+        <span class="filter-label">篩選上卦：</span>
+        <button class="trig-btn active" data-up="" onclick="App.filterByTrigram(this,'up')">全部</button>
+        <button class="trig-btn" data-up="7" onclick="App.filterByTrigram(this,'up')">☰乾</button>
+        <button class="trig-btn" data-up="0" onclick="App.filterByTrigram(this,'up')">☷坤</button>
+        <button class="trig-btn" data-up="1" onclick="App.filterByTrigram(this,'up')">☳震</button>
+        <button class="trig-btn" data-up="2" onclick="App.filterByTrigram(this,'up')">☵坎</button>
+        <button class="trig-btn" data-up="4" onclick="App.filterByTrigram(this,'up')">☶艮</button>
+        <button class="trig-btn" data-up="6" onclick="App.filterByTrigram(this,'up')">☴巽</button>
+        <button class="trig-btn" data-up="5" onclick="App.filterByTrigram(this,'up')">☲離</button>
+        <button class="trig-btn" data-up="3" onclick="App.filterByTrigram(this,'up')">☱兌</button>
+      </div>
+    </div>
+    <div id="hex-grid"></div>
+    <div id="hex-modal" style="display:none">
+      <div id="hex-modal-overlay" onclick="App.closeModal()"></div>
+      <div id="hex-modal-content">
+        <button id="modal-close" onclick="App.closeModal()">✕</button>
+        <div id="hex-modal-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: 歷史記錄
+══════════════════════════════════════════════ -->
+<div id="page-history" class="page" style="display:none">
+  <div class="container">
+    <div class="card">
+      <div class="card-title">占卦歷史記錄</div>
+      <div id="hist-stats"></div>
+    </div>
+    <div id="hist-list"></div>
+    <div id="hist-pagination"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: 命卦推算
+══════════════════════════════════════════════ -->
+<div id="page-mingua" class="page" style="display:none">
+  <div class="container">
+
+    <!-- ── 系統一：八宅命卦 ── -->
+    <div class="mingua-sys-label">
+      <span class="sys-num">一</span>八 宅 命 卦
+      <span class="sys-sub">方位吉凶・東西四命</span>
+    </div>
+    <div class="card">
+      <div class="mingua-intro">依出生年份與性別推算，判斷先天能量與吉凶方位。</div>
+      <div class="mingua-form">
+        <label class="set-label">出生年份（西元）</label>
+        <input id="mingua-year" type="number" min="1900" max="2100" placeholder="例：1990" />
+        <label class="set-label" style="margin-top:.9rem">性別</label>
+        <div id="mingua-gender-row">
+          <button class="gender-btn active" data-gender="male" onclick="App.setMinguaGender(this)">♂ 男命</button>
+          <button class="gender-btn" data-gender="female" onclick="App.setMinguaGender(this)">♀ 女命</button>
+        </div>
+        <button id="btn-calc-mingua" onclick="App.calcAndShowMingua()">推　算　命　卦</button>
+        <div id="mingua-err" class="mingua-err"></div>
+        <div class="set-hint" style="margin-top:.5rem">✦ 推算後，命卦將自動顯示在「起卦」頁每次結果中</div>
+      </div>
+    </div>
+    <div id="mingua-result"></div>
+    <div class="card" style="margin-top:.8rem">
+      <div class="card-title" style="font-size:.88rem;margin-bottom:.6rem">命卦速查表</div>
+      <div class="mq-group e4-group">
+        <div class="mq-label">東四命</div>
+        <div class="mq-items"><span>坎命（1）</span><span>震命（3）</span><span>巽命（4）</span><span>離命（9）</span></div>
+      </div>
+      <div class="mq-group w4-group">
+        <div class="mq-label">西四命</div>
+        <div class="mq-items"><span>坤命（2）</span><span>乾命（6）</span><span>兌命（7）</span><span>艮命（8）</span></div>
+      </div>
+      <div class="set-hint" style="margin-top:.6rem">同群命卦相合；東四命與西四命相互為凶</div>
+    </div>
+
+    <!-- ── 系統二：梅花易數本命卦 ── -->
+    <div class="mingua-sys-label" style="margin-top:1.6rem">
+      <span class="sys-num mh-num">二</span>梅 花 易 數 本 命 卦
+      <span class="sys-sub">六十四卦・精確到時辰</span>
+    </div>
+    <div class="card mh-card">
+      <div class="mingua-intro">依完整出生日期與時辰，以梅花易數先天卦數推算個人本命卦（六十四卦之一），精度更高。</div>
+      <div class="mingua-form">
+        <label class="set-label">出生年份（西元）</label>
+        <input id="mh-year" type="number" min="1900" max="2100" placeholder="例：1990" />
+        <div class="mh-date-row">
+          <div class="mh-date-item">
+            <label class="set-label">月份</label>
+            <select id="mh-month">
+              <option value="">月</option>
+              <option value="1">1月</option><option value="2">2月</option>
+              <option value="3">3月</option><option value="4">4月</option>
+              <option value="5">5月</option><option value="6">6月</option>
+              <option value="7">7月</option><option value="8">8月</option>
+              <option value="9">9月</option><option value="10">10月</option>
+              <option value="11">11月</option><option value="12">12月</option>
+            </select>
+          </div>
+          <div class="mh-date-item">
+            <label class="set-label">日期</label>
+            <select id="mh-day">
+              <option value="">日</option>
+              <script>for(var _d=1;_d<=31;_d++)document.write('<option value="'+_d+'">'+_d+'日</option>');</script>
+            </select>
+          </div>
+          <div class="mh-date-item">
+            <label class="set-label">時辰</label>
+            <select id="mh-shichen">
+              <option value="">時</option>
+              <option value="1">子（23–1時）</option>
+              <option value="2">丑（1–3時）</option>
+              <option value="3">寅（3–5時）</option>
+              <option value="4">卯（5–7時）</option>
+              <option value="5">辰（7–9時）</option>
+              <option value="6">巳（9–11時）</option>
+              <option value="7">午（11–13時）</option>
+              <option value="8">未（13–15時）</option>
+              <option value="9">申（15–17時）</option>
+              <option value="10">酉（17–19時）</option>
+              <option value="11">戌（19–21時）</option>
+              <option value="12">亥（21–23時）</option>
+            </select>
+          </div>
+        </div>
+        <button id="btn-calc-meihua" onclick="App.calcAndShowMeihua()">推　算　本　命　卦</button>
+        <div id="mh-err" class="mingua-err"></div>
+        <div class="set-hint" style="margin-top:.5rem">✦ 先天八卦數法・上卦取年月日・下卦加時辰</div>
+      </div>
+    </div>
+    <div id="meihua-result"></div>
+
+  </div>
+</div>
+
+<footer id="ftr">
+  易經占卦系統 · 周易六十四卦全解 · 結合現代生活的決策反思工具
+  <span id="ftr-author">台南小莊製作</span>
+</footer>
+
+<script src="/js/hexagrams.js"></script>
+<script src="/js/calendar.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

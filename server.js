@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const { readings } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -53,96 +52,6 @@ async function generateWithFallback(prompt, apiKey) {
 }
 
 // ════════════════════════════════════════════════════════
-// API: 儲存占卦記錄
-// POST /api/readings
-// ════════════════════════════════════════════════════════
-app.post('/api/readings', async (req, res) => {
-  const userId = req.headers['x-user-id'] || 'anonymous';
-  const { question, main_hex, main_name, lines, changed_hex, changed_name, cast_method, ganzhi_info } = req.body;
-  if (!main_hex || !main_name || !lines) return res.status(400).json({ error: '缺少必要欄位' });
-
-  const doc = {
-    user_id: userId,
-    created_at: new Date().toISOString(),
-    question: question || '',
-    main_hex,
-    main_name,
-    lines: Array.isArray(lines) ? lines : JSON.parse(lines),
-    changed_hex: changed_hex || null,
-    changed_name: changed_name || null,
-    ai_interp: null,
-    cast_method: cast_method || 'coins',
-    ganzhi_info: ganzhi_info || null,
-  };
-
-  try {
-    const inserted = await readings.insertAsync(doc);
-    res.json({ id: inserted._id, success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ════════════════════════════════════════════════════════
-// API: 取得歷史記錄
-// GET /api/readings?page=1&limit=20
-// ════════════════════════════════════════════════════════
-app.get('/api/readings', async (req, res) => {
-  const userId = req.headers['x-user-id'] || 'anonymous';
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20;
-  const skip = (page - 1) * limit;
-  const query = { user_id: userId };
-
-  try {
-    const total = await readings.countAsync(query);
-    const rows = await readings
-      .find(query)
-      .sort({ created_at: -1 })
-      .skip(skip)
-      .limit(limit)
-      .execAsync();
-
-    const data = rows.map(r => ({
-      id: r._id,
-      created_at: r.created_at,
-      question: r.question,
-      main_hex: r.main_hex,
-      main_name: r.main_name,
-      changed_hex: r.changed_hex,
-      changed_name: r.changed_name,
-      lines: r.lines,
-      cast_method: r.cast_method,
-      ganzhi_info: r.ganzhi_info,
-      has_ai: r.ai_interp ? 1 : 0,
-    }));
-
-    res.json({ total, page, limit, data });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ════════════════════════════════════════════════════════
-// API: 取得單筆記錄
-// GET /api/readings/:id
-// ════════════════════════════════════════════════════════
-app.get('/api/readings/:id', async (req, res) => {
-  const userId = req.headers['x-user-id'] || 'anonymous';
-  try {
-    const row = await readings.findOneAsync({ _id: req.params.id, user_id: userId });
-    if (!row) return res.status(404).json({ error: '找不到記錄' });
-    res.json({ ...row, id: row._id });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ════════════════════════════════════════════════════════
-// API: AI 解卦
-// POST /api/ai-interpret
-// ════════════════════════════════════════════════════════
-// ════════════════════════════════════════════════════════
 // API: 測試 API Key
 // POST /api/ai-test
 // ════════════════════════════════════════════════════════
@@ -157,6 +66,10 @@ app.post('/api/ai-test', async (req, res) => {
   }
 });
 
+// ════════════════════════════════════════════════════════
+// API: AI 解卦
+// POST /api/ai-interpret
+// ════════════════════════════════════════════════════════
 app.post('/api/ai-interpret', async (req, res) => {
   const apiKey = req.headers['x-api-key'] || '';
   // return_prompt_only 不需要 API Key
@@ -164,7 +77,7 @@ app.post('/api/ai-interpret', async (req, res) => {
     return res.status(503).json({ error: '未設定 Google AI Key，請點右上角 ⚙ 設定' });
   }
 
-  const { reading_id, question, category, inclination, worry, reaction, ai_style,
+  const { question, category, inclination, worry, reaction, ai_style,
           main_hex, main_name, guaci, virtue, modern,
           changing_lines, changed_hex, changed_name, changed_guaci, ganzhi_info } = req.body;
 
@@ -278,12 +191,6 @@ ${contextBlock}
 
   try {
     const { text, model } = await generateWithFallback(prompt, apiKey);
-
-    if (reading_id) {
-      const userId = req.headers['x-user-id'] || 'anonymous';
-      await readings.updateAsync({ _id: reading_id, user_id: userId }, { $set: { ai_interp: text } });
-    }
-
     res.json({ interpretation: text, model });
   } catch (err) {
     console.error('Gemini API error:', err.message);
@@ -410,35 +317,15 @@ app.post('/api/ai-raw', async (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════
-// API: 刪除記錄
-// DELETE /api/readings/:id
-// ════════════════════════════════════════════════════════
-app.delete('/api/readings/:id', async (req, res) => {
-  const userId = req.headers['x-user-id'] || 'anonymous';
-  try {
-    const removed = await readings.removeAsync({ _id: req.params.id, user_id: userId }, {});
-    if (removed === 0) return res.status(403).json({ error: '無權限刪除此記錄' });
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ════════════════════════════════════════════════════════
 // API: 系統狀態
 // GET /api/status
 // ════════════════════════════════════════════════════════
-app.get('/api/status', async (req, res) => {
-  try {
-    const count = await readings.countAsync({});
-    res.json({
-      ai_enabled: !!genAI,
-      total_readings: count,
-      version: '1.0.0'
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+app.get('/api/status', (req, res) => {
+  res.json({
+    ai_enabled: !!genAI,
+    version: '1.0.0',
+    storage: 'local' // 資料存在用戶裝置 localStorage
+  });
 });
 
 // Catch-all: serve index.html

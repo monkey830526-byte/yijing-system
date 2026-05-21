@@ -1039,14 +1039,41 @@ ${dongYaoCi.join('\n')}
     return localStorage.getItem('gemini_api_key') || '';
   }
 
-  // 匿名用戶識別（localStorage 永久保留，不同瀏覽器/裝置各自獨立）
-  function getUserId() {
-    let uid = localStorage.getItem('yijing_user_id');
-    if (!uid) {
-      uid = 'u_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
-      localStorage.setItem('yijing_user_id', uid);
-    }
-    return uid;
+  // ══════════════════════════════════════
+  // 本地儲存工具（localStorage，資料存在自己裝置）
+  // ══════════════════════════════════════
+  const LOCAL_READINGS_KEY = 'yijing_readings';
+
+  function _localGetAll() {
+    try { return JSON.parse(localStorage.getItem(LOCAL_READINGS_KEY) || '[]'); }
+    catch(e) { return []; }
+  }
+
+  function _localSave(arr) {
+    localStorage.setItem(LOCAL_READINGS_KEY, JSON.stringify(arr));
+  }
+
+  function _localInsert(doc) {
+    const arr = _localGetAll();
+    doc.id = 'r_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+    doc.created_at = new Date().toISOString();
+    arr.unshift(doc); // 最新在前
+    _localSave(arr);
+    return doc;
+  }
+
+  function _localFindById(id) {
+    return _localGetAll().find(r => r.id === id) || null;
+  }
+
+  function _localDelete(id) {
+    _localSave(_localGetAll().filter(r => r.id !== id));
+  }
+
+  function _localUpdate(id, patch) {
+    const arr = _localGetAll();
+    const idx = arr.findIndex(r => r.id === id);
+    if (idx !== -1) { Object.assign(arr[idx], patch); _localSave(arr); }
   }
 
   async function checkStatus() {
@@ -1505,7 +1532,6 @@ ${dongYaoCi.join('\n')}
         method: 'POST',
         headers: {'Content-Type':'application/json', 'x-api-key': getApiKey()},
         body: JSON.stringify({
-          reading_id: state.currentReadingId,
           question: q,
           category: state.category,
           inclination: lean,
@@ -1535,6 +1561,10 @@ ${dongYaoCi.join('\n')}
       if (data.model) {
         textDiv.innerHTML += `<div class="ai-model-note">使用模型：${data.model}</div>`;
       }
+      // 儲存 AI 解析結果到 localStorage
+      if (state.currentReadingId) {
+        _localUpdate(state.currentReadingId, { ai_interp: data.interpretation, has_ai: 1 });
+      }
       btn.textContent = '✦ 重新解卦';
       btn.disabled = false;
     } catch(e) {
@@ -1545,9 +1575,9 @@ ${dongYaoCi.join('\n')}
   }
 
   // ══════════════════════════════════════
-  // 儲存記錄
+  // 儲存記錄（存入裝置 localStorage）
   // ══════════════════════════════════════
-  async function saveReading() {
+  function saveReading() {
     const mainNum = linesToHexNum(state.castLines);
     const cv = hasChanging(state.castLines) ? changedVals(state.castLines) : null;
     const cn = cv ? linesToHexNum(cv) : null;
@@ -1563,25 +1593,22 @@ ${dongYaoCi.join('\n')}
     ].filter(Boolean).join(' ');
 
     try {
-      const r = await fetch('/api/readings', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json', 'x-user-id': getUserId()},
-        body: JSON.stringify({
-          question: questionFull || q,
-          main_hex: mainNum,
-          main_name: H[mainNum].n,
-          lines: state.castLines,
-          changed_hex: cn,
-          changed_name: cn ? H[cn].n : null,
-          cast_method: state.castMethod === 'time' ? '時辰起卦' : state.castMethod === 'manual' ? '手動輸入' : '銅錢法',
-          ganzhi_info: gz,
-        })
+      const doc = _localInsert({
+        question: questionFull || q,
+        main_hex: mainNum,
+        main_name: H[mainNum].n,
+        lines: state.castLines,
+        changed_hex: cn,
+        changed_name: cn ? H[cn].n : null,
+        cast_method: state.castMethod === 'time' ? '時辰起卦' : state.castMethod === 'manual' ? '手動輸入' : '銅錢法',
+        ganzhi_info: gz,
+        has_ai: 0,
+        ai_interp: '',
       });
-      const data = await r.json();
-      state.currentReadingId = data.id;
-      document.getElementById('save-msg').textContent = `✓ 已儲存（記錄 #${data.id}）`;
+      state.currentReadingId = doc.id;
+      document.getElementById('save-msg').textContent = `✓ 已儲存於裝置`;
     } catch(e) {
-      document.getElementById('save-msg').textContent = '儲存失敗，請確認伺服器連線。';
+      document.getElementById('save-msg').textContent = '儲存失敗：' + e.message;
     }
   }
 
@@ -1723,15 +1750,19 @@ ${dongYaoCi.join('\n')}
   // ══════════════════════════════════════
   // 歷史記錄
   // ══════════════════════════════════════
-  async function loadHistory(page) {
+  function loadHistory(page) {
     state.histPage = page;
     try {
-      const r = await fetch(`/api/readings?page=${page}&limit=15`, {
-        headers: {'x-user-id': getUserId()}
-      }).then(x => x.json());
+      const all = _localGetAll();
+      const limit = 15;
+      const total = all.length;
+      const skip = (page - 1) * limit;
+      const data = all.slice(skip, skip + limit);
+      const r = { total, page, limit, data };
+
       const el = document.getElementById('hist-list');
       const statsEl = document.getElementById('hist-stats');
-      statsEl.textContent = `共 ${r.total} 筆記錄`;
+      statsEl.textContent = `共 ${r.total} 筆記錄（存於裝置）`;
       if (!r.data.length) { el.innerHTML = '<div class="card" style="color:var(--ink2);text-align:center">尚無記錄，起卦後可儲存。</div>'; return; }
 
       el.innerHTML = r.data.map(row => {
@@ -1776,14 +1807,13 @@ ${dongYaoCi.join('\n')}
         pg.appendChild(b);
       }
     } catch(e) {
-      document.getElementById('hist-list').innerHTML = '<div class="card" style="color:var(--ink2)">無法載入記錄，請確認伺服器連線。</div>';
+      document.getElementById('hist-list').innerHTML = '<div class="card" style="color:var(--ink2)">無法載入記錄。</div>';
     }
   }
 
-  async function viewHistDetail(id) {
-    const row = await fetch(`/api/readings/${id}`, {
-      headers: {'x-user-id': getUserId()}
-    }).then(x => x.json());
+  function viewHistDetail(id) {
+    const row = _localFindById(id);
+    if (!row) return;
     const lines = Array.isArray(row.lines) ? row.lines : JSON.parse(row.lines);
     state.castLines = lines;
     state.currentReadingId = id;
@@ -1798,13 +1828,10 @@ ${dongYaoCi.join('\n')}
     }
   }
 
-  async function deleteReading(e, id) {
+  function deleteReading(e, id) {
     e.stopPropagation();
     if (!confirm('確定刪除這筆記錄？')) return;
-    await fetch(`/api/readings/${id}`, {
-      method:'DELETE',
-      headers: {'x-user-id': getUserId()}
-    });
+    _localDelete(id);
     loadHistory(state.histPage);
   }
 

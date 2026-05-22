@@ -1022,6 +1022,7 @@ ${dongYaoCi.join('\n')}
 
   // ── Boot ──
   function init() {
+    if (typeof initLang === 'function') initLang();
     initSplash();
     document.querySelectorAll('.nav-btn').forEach(b => {
       b.addEventListener('click', () => switchPage(b.dataset.page));

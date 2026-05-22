@@ -39,6 +39,11 @@
     <button class="nav-btn" data-page="history">歷史記錄</button>
     <button class="nav-btn" data-page="mingua">命卦</button>
   </nav>
+  <div id="lang-switcher">
+    <button class="lang-btn active" data-lang="zh" onclick="applyLang('zh')">中</button>
+    <button class="lang-btn" data-lang="en" onclick="applyLang('en')">EN</button>
+    <button class="lang-btn" data-lang="ja" onclick="applyLang('ja')">日</button>
+  </div>
   <div id="ai-status" onclick="App.openSettings()" title="點擊設定 API Key"></div>
   <button id="btn-settings" onclick="App.openSettings()" title="設定">⚙</button>
 </header>
@@ -47,19 +52,19 @@
 <div id="settings-modal" style="display:none">
   <div id="settings-overlay" onclick="App.closeSettings()"></div>
   <div id="settings-box">
-    <div class="card-title">⚙ 系統設定</div>
+    <div class="card-title" id="settings-title">⚙ 系統設定</div>
 
     <!-- AI Key 輸入 -->
-    <label class="set-label">Google AI API Key</label>
+    <label class="set-label" id="set-key-label">Google AI API Key</label>
     <input id="api-key-input" type="password" placeholder="AIzaSy…" autocomplete="off"/>
     <div class="set-actions">
       <button id="btn-save-key" onclick="App.saveApiKey()">儲存並啟用</button>
-      <button onclick="App.closeSettings()" class="btn-cancel">取消</button>
+      <button id="btn-cancel-settings" onclick="App.closeSettings()" class="btn-cancel">取消</button>
     </div>
     <div id="key-msg"></div>
 
     <!-- 模型狀態 -->
-    <label class="set-label" style="margin-top:.8rem">AI 模型（自動切換）</label>
+    <label class="set-label" id="set-model-label" style="margin-top:.8rem">AI 模型（自動切換）</label>
     <div id="model-status" class="set-hint"></div>
 
     <!-- 申請教學 -->
@@ -147,7 +152,7 @@
     <!-- ── 起卦守則 ── -->
     <div id="guide-card">
       <div id="guide-header" onclick="App.toggleGuide()">
-        <span>📋 起卦前請閱讀</span>
+        <span id="guide-header-text">📋 起卦前請閱讀</span>
         <span id="guide-icon">▾</span>
       </div>
       <div id="guide-body">
@@ -175,7 +180,7 @@
     <div class="card" id="q-card">
 
       <!-- STEP 1: 分類 -->
-      <div class="card-title">這件事關於⋯</div>
+      <div class="card-title" id="q-about-label">這件事關於⋯</div>
       <div id="cat-grid">
         <button class="cat-btn" data-cat="事業" onclick="App.setCategory(this)">💼 事業</button>
         <button class="cat-btn" data-cat="感情" onclick="App.setCategory(this)">❤️ 感情</button>
@@ -186,7 +191,7 @@
       </div>
 
       <!-- STEP 2: 主問題 -->
-      <div class="q-section-label">你想問的是⋯</div>
+      <div class="q-section-label" id="q-section-label">你想問的是⋯</div>
       <input id="q-input" placeholder="描述你的狀況或問題（可留空）" />
 
       <!-- 幫別人算 -->
@@ -333,7 +338,7 @@
         <p class="hint">選擇每爻爻性（第一爻為最下爻）：</p>
         <div id="manual-lines"></div>
       </div>
-      <button id="cast-btn" onclick="App.startCast()">起　卦</button>
+      <button id="cast-btn" onclick="App.startCast()" data-i18n="btn.cast">起　卦</button>
     </div>
 
     <!-- 投錢動畫 -->
@@ -359,13 +364,13 @@
 
       <!-- 第一反應 -->
       <div id="reaction-panel" class="card">
-        <div class="reaction-title">看到這個卦，你的第一反應是？</div>
+        <div class="reaction-title" id="reaction-label">看到這個卦，你的第一反應是？</div>
         <div class="reaction-hint">誠實的反應往往就是你心裡真正的答案</div>
         <div id="reaction-btns">
-          <button class="react-btn" onclick="App.setReaction(this,'relieved')">😮‍💨 鬆了一口氣</button>
-          <button class="react-btn" onclick="App.setReaction(this,'disappointed')">😔 有點失望</button>
-          <button class="react-btn" onclick="App.setReaction(this,'confused')">🤔 有點疑惑</button>
-          <button class="react-btn" onclick="App.setReaction(this,'agree')">✅ 完全認同</button>
+          <button class="react-btn rxn-btn" onclick="App.setReaction(this,'relieved')">😮‍💨 鬆了一口氣</button>
+          <button class="react-btn rxn-btn" onclick="App.setReaction(this,'disappointed')">😔 有點失望</button>
+          <button class="react-btn rxn-btn" onclick="App.setReaction(this,'confused')">🤔 有點疑惑</button>
+          <button class="react-btn rxn-btn" onclick="App.setReaction(this,'agree')">✅ 完全認同</button>
         </div>
         <div id="reaction-insight"></div>
       </div>
@@ -384,7 +389,7 @@
         </div>
         <div class="ai-btn-group">
           <button id="ai-btn" onclick="App.doAI()">✦ AI 深度解卦</button>
-          <span class="ai-btn-note">讀卦意象・給感悟與方向</span>
+          <span class="ai-btn-note" id="ai-note-general">讀卦意象・給感悟與方向</span>
         </div>
         <div id="ai-result" style="display:none">
           <div class="card-title">AI 解卦</div>
@@ -398,7 +403,7 @@
 
         <div class="ai-btn-group">
           <button id="trad-ai-btn" onclick="App.doTraditionalAI()">☯ 六爻傳統解析</button>
-          <span class="ai-btn-note trad-note">算卦邏輯・直接論斷吉凶人事</span>
+          <span class="ai-btn-note trad-note" id="ai-note-trad">算卦邏輯・直接論斷吉凶人事</span>
         </div>
         <div id="trad-ai-result" style="display:none">
           <div class="card-title trad-card-title">傳統六爻卜法解析</div>
@@ -418,12 +423,12 @@
       </div>
 
       <div id="result-actions">
-        <button class="action-btn" onclick="App.saveReading()">💾 儲存記錄</button>
-        <button class="action-btn" id="btn-export" onclick="App.exportCard()">📄 導出圖檔</button>
-        <button class="action-btn" onclick="App.resetAll()">↺ 重新起卦</button>
+        <button class="action-btn" id="btn-save" onclick="App.saveReading()">💾 儲存記錄</button>
+        <button class="action-btn" id="btn-export-card" onclick="App.exportCard()">📄 導出圖檔</button>
+        <button class="action-btn" id="btn-reset" onclick="App.resetAll()">↺ 重新起卦</button>
       </div>
       <div id="result-actions-trad">
-        <button class="action-btn action-btn-trad" id="trad-export-btn" onclick="App.exportTradResult()">📜 導出六爻解析圖</button>
+        <button class="action-btn action-btn-trad" id="btn-export-trad" onclick="App.exportTradResult()">📜 導出六爻解析圖</button>
       </div>
       <div id="save-msg"></div>
     </div>
@@ -583,6 +588,7 @@
 
 <script src="/js/hexagrams.js"></script>
 <script src="/js/calendar.js"></script>
+<script src="/js/i18n.js"></script>
 <script src="/js/app.js"></script>
 </body>
 </html>

@@ -631,6 +631,18 @@ body{
 }
 .pg-btn.active,.pg-btn:hover{border-color:var(--red-border);color:var(--red2);background:var(--red-bg)}
 
+/* ── Language Switcher ── */
+#lang-switcher{display:flex;gap:.25rem;align-items:center}
+.lang-btn{
+  background:transparent;border:1px solid var(--border);border-radius:var(--radius);
+  padding:.2rem .45rem;font-size:.7rem;letter-spacing:.05em;color:var(--ink4);
+  cursor:pointer;transition:all .18s;font-family:inherit;
+}
+.lang-btn:hover{border-color:var(--red-border);color:var(--red2)}
+.lang-btn.active{
+  background:var(--red);border-color:var(--red);color:#f5ede0;font-weight:600;
+}
+
 /* ── Settings ── */
 #btn-settings{
   background:transparent;border:1px solid var(--border);border-radius:var(--radius);

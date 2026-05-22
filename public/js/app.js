@@ -1012,8 +1012,8 @@ ${dongYaoCi.join('\n')}
     // 每次隨機顯示一張啟動圖
     const splashImgs = [
       '/images/splash.jpg',
-      '/images/ChatGPT Image 2026年5月17日 下午09_39_53.png',
-      '/images/ChatGPT Image 2026年5月17日 下午09_41_13.png',
+      '/images/splash2.png',
+      '/images/splash3.png',
     ];
     const pick = splashImgs[Math.floor(Math.random() * splashImgs.length)];
     const img = document.getElementById('splash-img');

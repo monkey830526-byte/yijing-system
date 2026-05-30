@@ -28,8 +28,25 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const url = e.request.url;
   // AI API 請求不走快取
-  if (e.request.url.includes('/api/')) return;
+  if (url.includes('/api/')) return;
+
+  // HTML / JS / CSS：網路優先（確保拿到最新版），失敗才用快取（離線）
+  if (e.request.mode === 'navigate' || /\.(js|css|json)$/.test(url)) {
+    e.respondWith(
+      fetch(e.request)
+        .then(resp => {
+          const clone = resp.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return resp;
+        })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // 圖片等靜態資源：快取優先（速度快）
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );

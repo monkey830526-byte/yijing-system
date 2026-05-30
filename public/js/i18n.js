@@ -296,6 +296,12 @@ function applyLang(lang) {
   };
   const setQ = (id, key) => set(id, key, 'placeholder');
 
+  // 通用 data-i18n 屬性處理
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t(key) !== key) el.textContent = t(key);
+  });
+
   // Splash
   set('splash-title', 'splash.title');
   set('splash-sub', 'splash.sub');

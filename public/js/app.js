@@ -448,7 +448,7 @@ ${dongYaoCi.join('\n')}
       const r = await fetch('/api/ai-raw', {
         method: 'POST',
         headers: { 'Content-Type':'application/json', 'x-api-key': getApiKey() },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, lang: window._lang || 'zh' }),
       });
       const data = await r.json();
       if (data.error) throw new Error(data.error);
@@ -864,6 +864,7 @@ ${dongYaoCi.join('\n')}
           unlucky:    mg.unlucky,
           year,
           gender:     state.minguaGender,
+          lang: window._lang || 'zh',
         })
       });
       const data = await r.json();
@@ -925,6 +926,7 @@ ${dongYaoCi.join('\n')}
           zhi_guaci:    zhiHx.gc,
           year, month, day,
           shichen_name: MH_SHICHEN_NAME[shichen],
+          lang: window._lang || 'zh',
         })
       });
       const data = await res.json();
@@ -1479,6 +1481,7 @@ ${dongYaoCi.join('\n')}
           changed_hex: cn, changed_name: cn ? H[cn].n : null,
           changed_guaci: cn ? H[cn].gc : null,
           ganzhi_info: gz,
+          lang: window._lang || 'zh',
         })
       });
       const data = await r.json();
@@ -1549,6 +1552,7 @@ ${dongYaoCi.join('\n')}
           changed_name: cn ? H[cn].n : null,
           changed_guaci: cn ? H[cn].gc : null,
           ganzhi_info: gz,
+          lang: window._lang || 'zh',
         })
       });
       const data = await r.json();

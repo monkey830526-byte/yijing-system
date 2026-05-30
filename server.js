@@ -51,6 +51,17 @@ async function generateWithFallback(prompt, apiKey) {
   throw lastErr;
 }
 
+// 依語言附加輸出語言指令（覆蓋 prompt 內的「請用繁體中文」）
+function langSuffix(lang) {
+  if (lang === 'en') {
+    return `\n\n⚠️ LANGUAGE OVERRIDE: Ignore any instruction above to reply in Chinese. Respond ENTIRELY in natural English. Keep the emoji section markers (⭐💬📖🎯✅⚠️) exactly, but translate every heading and all content into English. Hexagram names may keep their Chinese form with an English gloss in parentheses.`;
+  }
+  if (lang === 'ja') {
+    return `\n\n⚠️ 言語指定：上記の「繁體中文で回答」という指示を無視し、すべて自然な日本語で回答してください。絵文字の見出し記号（⭐💬📖🎯✅⚠️）はそのまま保持し、見出しと内容をすべて日本語に翻訳してください。卦名は漢字のままで構いませんが、必要に応じて日本語の読みを添えてください。`;
+  }
+  return ''; // zh：維持原 prompt
+}
+
 // ════════════════════════════════════════════════════════
 // API: 測試 API Key
 // POST /api/ai-test
@@ -182,7 +193,7 @@ ${contextBlock}
 請盡量深入詳細，不要自行限制字數。`,
   };
 
-  const prompt = stylePrompts[ai_style] || stylePrompts.friend;
+  const prompt = (stylePrompts[ai_style] || stylePrompts.friend) + langSuffix(req.body.lang);
 
   // 僅回傳 prompt（供複製）
   if (req.body.return_prompt_only) {
@@ -287,6 +298,8 @@ app.post('/api/ai-mingua', async (req, res) => {
     return res.status(400).json({ error: '未知命卦類型' });
   }
 
+  prompt += langSuffix(req.body.lang);
+
   try {
     const { text, model } = await generateWithFallback(prompt, apiKey);
     res.json({ interpretation: text, model });
@@ -307,8 +320,9 @@ app.post('/api/ai-raw', async (req, res) => {
   }
   const { prompt } = req.body;
   if (!prompt) return res.status(400).json({ error: '缺少 prompt' });
+  const fullPrompt = prompt + langSuffix(req.body.lang);
   try {
-    const { text, model } = await generateWithFallback(prompt, apiKey);
+    const { text, model } = await generateWithFallback(fullPrompt, apiKey);
     res.json({ interpretation: text, model });
   } catch (err) {
     console.error('ai-raw error:', err.message);

@@ -1014,8 +1014,8 @@ ${dongYaoCi.join('\n')}
     // 每次隨機顯示一張啟動圖
     const splashImgs = [
       '/images/splash.jpg',
-      '/images/splash2.png',
-      '/images/splash3.png',
+      '/images/splash2.jpg',
+      '/images/splash3.jpg',
     ];
     const pick = splashImgs[Math.floor(Math.random() * splashImgs.length)];
     const img = document.getElementById('splash-img');

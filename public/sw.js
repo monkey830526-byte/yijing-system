@@ -1,4 +1,4 @@
-const CACHE = 'yijing-v1';
+const CACHE = 'yijing-v2';
 const ASSETS = [
   '/',
   '/css/style.css',
@@ -7,8 +7,8 @@ const ASSETS = [
   '/js/i18n.js',
   '/js/app.js',
   '/images/splash.jpg',
-  '/images/splash2.png',
-  '/images/splash3.png',
+  '/images/splash2.jpg',
+  '/images/splash3.jpg',
   '/images/icon-192.png',
   '/images/icon-512.png',
 ];

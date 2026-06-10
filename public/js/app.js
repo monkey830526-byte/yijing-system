@@ -1755,6 +1755,10 @@ ${dongYaoCi.join('\n')}
   // ══════════════════════════════════════
   // 歷史記錄
   // ══════════════════════════════════════
+  function _esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
   function loadHistory(page) {
     state.histPage = page;
     try {
@@ -1767,8 +1771,9 @@ ${dongYaoCi.join('\n')}
 
       const el = document.getElementById('hist-list');
       const statsEl = document.getElementById('hist-stats');
-      statsEl.textContent = `共 ${r.total} 筆記錄（存於裝置）`;
-      if (!r.data.length) { el.innerHTML = '<div class="card" style="color:var(--ink2);text-align:center">尚無記錄，起卦後可儲存。</div>'; return; }
+      const zh = (window._lang || 'zh') === 'zh';
+      statsEl.textContent = zh ? `共 ${r.total} 筆記錄（存於裝置）` : `${r.total} ${t('hist.stats')}`;
+      if (!r.data.length) { el.innerHTML = `<div class="card" style="color:var(--ink2);text-align:center">${t('hist.empty')}</div>`; return; }
 
       el.innerHTML = r.data.map(row => {
         const gz = row.ganzhi_info || null;
@@ -1788,7 +1793,7 @@ ${dongYaoCi.join('\n')}
                 <span class="hist-name">${row.main_name}</span>
                 <span class="ft-mini ${ft.cls}">${ft.label}</span>
               </div>
-              ${row.question ? `<div class="hist-q">「${row.question}」</div>` : '<div class="hist-q" style="color:var(--ink3)">未填問題</div>'}
+              ${row.question ? `<div class="hist-q">「${_esc(row.question)}」</div>` : '<div class="hist-q" style="color:var(--ink3)">未填問題</div>'}
             </div>
             <div class="hist-right">
               <div class="hist-date">${formatDate(row.created_at)}</div>
@@ -1835,7 +1840,7 @@ ${dongYaoCi.join('\n')}
 
   function deleteReading(e, id) {
     e.stopPropagation();
-    if (!confirm('確定刪除這筆記錄？')) return;
+    if (!confirm(t('hist.delete'))) return;
     _localDelete(id);
     loadHistory(state.histPage);
   }
